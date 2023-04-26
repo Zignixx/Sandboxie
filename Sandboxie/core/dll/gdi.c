@@ -400,9 +400,9 @@ _FX WCHAR *Gdi_GetFontPath(const WCHAR *path)
     if (hFile != INVALID_HANDLE_VALUE) {
 
         BOOLEAN is_copy;
-        NTSTATUS status = SbieDll_GetHandlePath(hFile, path1, &is_copy);
+        NTSTATUS status = CobraSboxDll_GetHandlePath(hFile, path1, &is_copy);
         if ((! NT_SUCCESS(status)) ||
-            (! SbieDll_TranslateNtToDosPath(path1))) {
+            (! CobraSboxDll_TranslateNtToDosPath(path1))) {
 
             wmemcpy(path1, path, path_len);
             path1[path_len] = L'\0';
@@ -419,7 +419,7 @@ _FX WCHAR *Gdi_GetFontPath(const WCHAR *path)
 
     path2 = File_TranslateDosToNtPath(path1);
     if (path2) {
-        ULONG mp_flags = SbieDll_MatchPath(L'f', path2);
+        ULONG mp_flags = CobraSboxDll_MatchPath(L'f', path2);
         if (PATH_IS_OPEN(mp_flags))
             SbieApi_Log(2205, L"Font Path %S", path1);
         Dll_Free(path2);
@@ -619,7 +619,7 @@ _FX void Gdi_AddFontsInBox(void)
         if (hFile != INVALID_HANDLE_VALUE) {
 
             BOOLEAN is_copy = FALSE;
-            NTSTATUS status = SbieDll_GetHandlePath(hFile, NULL, &is_copy);
+            NTSTATUS status = CobraSboxDll_GetHandlePath(hFile, NULL, &is_copy);
             if (NT_SUCCESS(status) && is_copy) {
 
                 Gdi_AddFontsInBox_2(hFile, WinFonts);
@@ -768,7 +768,7 @@ _FX BOOLEAN Gdi_InitZero(HMODULE module)
     module = (HMODULE)- 1;
 #endif
 
-    SBIEDLL_HOOK(Gdi_,GdiDllInitialize);
+    CobraSboxDll_HOOK(Gdi_,GdiDllInitialize);
 
     return TRUE;
 }
@@ -823,20 +823,20 @@ _FX BOOLEAN Gdi_Full_Init_impl(HMODULE module, BOOLEAN full)
 #ifndef _WIN64
 
 	if (Dll_OsBuild >= 8400) {
-		SBIEDLL_HOOK(Gdi_, CreateDCW);
+		CobraSboxDll_HOOK(Gdi_, CreateDCW);
 	}
 
 #endif ! _WIN64
 
-	SBIEDLL_HOOK(Gdi_, GdiAddFontResourceW);
+	CobraSboxDll_HOOK(Gdi_, GdiAddFontResourceW);
 
-	SBIEDLL_HOOK(Gdi_, RemoveFontResourceExW);
+	CobraSboxDll_HOOK(Gdi_, RemoveFontResourceExW);
 
 	if (GetFontResourceInfoW) {
-		SBIEDLL_HOOK(Gdi_, GetFontResourceInfoW);
+		CobraSboxDll_HOOK(Gdi_, GetFontResourceInfoW);
 	}
 
-	SBIEDLL_HOOK(Gdi_, CreateScalableFontResourceW);
+	CobraSboxDll_HOOK(Gdi_, CreateScalableFontResourceW);
 
 	//
 	// enumerate
@@ -853,10 +853,10 @@ _FX BOOLEAN Gdi_Full_Init_impl(HMODULE module, BOOLEAN full)
 			GetProcAddress(module, "GetStockObject");
 	}
 
-	SBIEDLL_HOOK(Gdi_, EnumFontFamiliesExA);
-	SBIEDLL_HOOK(Gdi_, EnumFontFamiliesExW);
+	CobraSboxDll_HOOK(Gdi_, EnumFontFamiliesExA);
+	CobraSboxDll_HOOK(Gdi_, EnumFontFamiliesExW);
 	if (full) {
-		SBIEDLL_HOOK(Gdi_, GetStockObject);
+		CobraSboxDll_HOOK(Gdi_, GetStockObject);
 	}
 
 	__sys_GetEnhMetaFileBits = (P_GetEnhMetaFileBits)

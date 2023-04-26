@@ -215,7 +215,7 @@ _FX BOOLEAN Key_InitDelete_v2()
 
     WCHAR BoxFilePath[MAX_PATH] = { 0 };
     wcscpy(BoxFilePath, Dll_BoxFilePath);
-    SbieDll_TranslateNtToDosPath(BoxFilePath);
+    CobraSboxDll_TranslateNtToDosPath(BoxFilePath);
 
     Key_BoxRootWatcher = FindFirstChangeNotification(BoxFilePath, FALSE, FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE);
 

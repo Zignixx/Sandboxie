@@ -61,7 +61,7 @@
 //---------------------------------------------------------------------------
 
 
-SBIEDLL_EXPORT NTSTATUS Key_GetName(
+CobraSboxDll_EXPORT NTSTATUS Key_GetName(
     HANDLE RootDirectory, UNICODE_STRING *ObjectName,
     WCHAR **OutTruePath, WCHAR **OutCopyPath, BOOLEAN *OutIsBoxedPath);
 
@@ -409,7 +409,7 @@ _FX BOOLEAN Key_Init(void)
 
     InitializeCriticalSection(&Key_Handles_CritSec);
 
-    SbieDll_MatchPath(L'k', (const WCHAR *)-1);
+    CobraSboxDll_MatchPath(L'k', (const WCHAR *)-1);
 
     Key_UseObjectNames = SbieApi_QueryConfBool(NULL, L"UseObjectNameForKeys", FALSE);
 
@@ -433,62 +433,62 @@ _FX BOOLEAN Key_Init(void)
     // intercept NTDLL entry points
     //
 
-    SBIEDLL_HOOK(Key_,NtCreateKey);
-    SBIEDLL_HOOK(Key_,NtOpenKey);
-    SBIEDLL_HOOK(Key_,NtDeleteKey);
-    SBIEDLL_HOOK(Key_,NtDeleteValueKey);
-    SBIEDLL_HOOK(Key_,NtSetValueKey);
-    SBIEDLL_HOOK(Key_,NtQueryKey);
-    SBIEDLL_HOOK(Key_,NtEnumerateKey);
-    SBIEDLL_HOOK(Key_,NtQueryValueKey);
-    SBIEDLL_HOOK(Key_,NtEnumerateValueKey);
-    SBIEDLL_HOOK(Key_,NtQueryMultipleValueKey);
-    SBIEDLL_HOOK(Key_,NtNotifyChangeKey);
-    SBIEDLL_HOOK(Key_,NtNotifyChangeMultipleKeys);
+    CobraSboxDll_HOOK(Key_,NtCreateKey);
+    CobraSboxDll_HOOK(Key_,NtOpenKey);
+    CobraSboxDll_HOOK(Key_,NtDeleteKey);
+    CobraSboxDll_HOOK(Key_,NtDeleteValueKey);
+    CobraSboxDll_HOOK(Key_,NtSetValueKey);
+    CobraSboxDll_HOOK(Key_,NtQueryKey);
+    CobraSboxDll_HOOK(Key_,NtEnumerateKey);
+    CobraSboxDll_HOOK(Key_,NtQueryValueKey);
+    CobraSboxDll_HOOK(Key_,NtEnumerateValueKey);
+    CobraSboxDll_HOOK(Key_,NtQueryMultipleValueKey);
+    CobraSboxDll_HOOK(Key_,NtNotifyChangeKey);
+    CobraSboxDll_HOOK(Key_,NtNotifyChangeMultipleKeys);
 
     void* NtRenameKey = GetProcAddress(Dll_Ntdll, "NtRenameKey");
     if (NtRenameKey) { // Windows XP
-        SBIEDLL_HOOK(Key_,NtRenameKey);
+        CobraSboxDll_HOOK(Key_,NtRenameKey);
     }
 
     void* NtOpenKeyEx = GetProcAddress(Dll_Ntdll, "NtOpenKeyEx");
     if (NtOpenKeyEx) { // windows server 2008 R2
-        SBIEDLL_HOOK(Key_, NtOpenKeyEx);
+        CobraSboxDll_HOOK(Key_, NtOpenKeyEx);
     }
 
     void* NtOpenKeyTransacted = GetProcAddress(Dll_Ntdll, "NtOpenKeyTransacted");
     if (NtOpenKeyTransacted) { // Windows vista
-        SBIEDLL_HOOK(Key_, NtOpenKeyTransacted);
+        CobraSboxDll_HOOK(Key_, NtOpenKeyTransacted);
     }
 
     void* NtOpenKeyTransactedEx = GetProcAddress(Dll_Ntdll, "NtOpenKeyTransactedEx");
     if (NtOpenKeyTransactedEx) { // windows server 2008 R2
-        SBIEDLL_HOOK(Key_, NtOpenKeyTransactedEx);
+        CobraSboxDll_HOOK(Key_, NtOpenKeyTransactedEx);
     }
 
     void* NtCreateKeyTransacted = GetProcAddress(Dll_Ntdll, "NtCreateKeyTransacted");
     if (NtCreateKeyTransacted) { // Windows vista
-        SBIEDLL_HOOK(Key_, NtCreateKeyTransacted);
+        CobraSboxDll_HOOK(Key_, NtCreateKeyTransacted);
     }
     
-    SBIEDLL_HOOK(Key_, NtSaveKey);
+    CobraSboxDll_HOOK(Key_, NtSaveKey);
     
     void* NtSaveKeyEx = GetProcAddress(Dll_Ntdll, "NtSaveKeyEx");
     if (NtSaveKeyEx) { // Windows XP
-        SBIEDLL_HOOK(Key_,NtSaveKeyEx);
+        CobraSboxDll_HOOK(Key_,NtSaveKeyEx);
     }
 
-    SBIEDLL_HOOK(Key_, NtLoadKey);
-    SBIEDLL_HOOK(Key_, NtLoadKey2);
+    CobraSboxDll_HOOK(Key_, NtLoadKey);
+    CobraSboxDll_HOOK(Key_, NtLoadKey2);
 
     void* NtLoadKey3 = GetProcAddress(Dll_Ntdll, "NtLoadKey3");
     if (NtLoadKey3) { // Windows 10 2004
-        SBIEDLL_HOOK(Key_,NtLoadKey3);
+        CobraSboxDll_HOOK(Key_,NtLoadKey3);
     }
 
     void* NtLoadKeyEx = GetProcAddress(Dll_Ntdll, "NtLoadKeyEx");
     if (NtLoadKeyEx) { // Windows Server 2003 
-        SBIEDLL_HOOK(Key_,NtLoadKeyEx);
+        CobraSboxDll_HOOK(Key_,NtLoadKeyEx);
     }
     
     return TRUE;
@@ -1034,7 +1034,7 @@ _FX NTSTATUS Key_FixNameWow64_2(WCHAR **OutTruePath, WCHAR **OutCopyPath)
     req->KeyPath_len = TruePath_len;
     memcpy(req->KeyPath, TruePath, TruePath_len);
 
-    rpl = (FILE_OPEN_WOW64_KEY_RPL *)SbieDll_CallServer((MSG_HEADER *)req);
+    rpl = (FILE_OPEN_WOW64_KEY_RPL *)CobraSboxDll_CallServer((MSG_HEADER *)req);
     if (! rpl)
         status = STATUS_INSUFFICIENT_RESOURCES;
     else {
@@ -1438,7 +1438,7 @@ _FX NTSTATUS Key_NtCreateKeyImpl(
     // check if this is an open or closed path
     //
 
-    mp_flags = SbieDll_MatchPath(L'k', TruePath);
+    mp_flags = CobraSboxDll_MatchPath(L'k', TruePath);
 
     if (PATH_IS_CLOSED(mp_flags)) {
         status = STATUS_ACCESS_DENIED;
@@ -2311,7 +2311,7 @@ _FX ULONG Key_CheckDepthForIsWritePath(const WCHAR *TruePath)
             break;
         *ptr = L'\0';
 
-        mp_flags = SbieDll_MatchPath(L'k', copy);
+        mp_flags = CobraSboxDll_MatchPath(L'k', copy);
         if (PATH_NOT_WRITE(mp_flags))
             break;
 
@@ -2679,7 +2679,7 @@ _FX NTSTATUS Key_NtDeleteValueKey(
     if (! NT_SUCCESS(status))
         __leave;
 
-    mp_flags = SbieDll_MatchPath(L'k', TruePath);
+    mp_flags = CobraSboxDll_MatchPath(L'k', TruePath);
 
     if (PATH_IS_CLOSED(mp_flags)) {
         status = STATUS_ACCESS_DENIED;
@@ -4475,7 +4475,7 @@ _FX HANDLE Key_GetTrueHandle(HANDLE KeyHandle, BOOLEAN *pIsOpenPath)
         // check if this is an open or closed path
         //
 
-        ULONG mp_flags = SbieDll_MatchPath(L'k', TruePath);
+        ULONG mp_flags = CobraSboxDll_MatchPath(L'k', TruePath);
 
         if (PATH_IS_OPEN(mp_flags) && pIsOpenPath)
             *pIsOpenPath = TRUE;
@@ -4729,7 +4729,7 @@ _FX WCHAR* Key_NtLoadKey_GetPath(OBJECT_ATTRIBUTES* SourceObjectAttributes)
             __leave;
 
         BOOLEAN IsBoxedPath;
-        status = SbieDll_GetHandlePath(FileHandle, WorkPath, &IsBoxedPath);
+        status = CobraSboxDll_GetHandlePath(FileHandle, WorkPath, &IsBoxedPath);
 
     } __except (EXCEPTION_EXECUTE_HANDLER) {
         status = GetExceptionCode();
@@ -4776,7 +4776,7 @@ _FX NTSTATUS Key_NtLoadKeyImpl(
 
     __try {
 
-        if (! SbieDll_TranslateNtToDosPath(WorkPath)) {
+        if (! CobraSboxDll_TranslateNtToDosPath(WorkPath)) {
             status = STATUS_ACCESS_DENIED;
             __leave;
         }
@@ -4818,7 +4818,7 @@ _FX NTSTATUS Key_NtLoadKeyImpl(
 
     if (NT_SUCCESS(status)) {
 
-        MSG_HEADER *rpl = SbieDll_CallServer(&req->h);
+        MSG_HEADER *rpl = CobraSboxDll_CallServer(&req->h);
         if (rpl) {
             status = rpl->status;
             Dll_Free(rpl);

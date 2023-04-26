@@ -1840,7 +1840,7 @@ _FX LONG SbieApi_ProcessExemptionControl(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetSysFunction
+// CobraSboxDll_GetSysFunction
 //---------------------------------------------------------------------------
 
 extern HANDLE                       SbieApi_DeviceHandle;
@@ -1851,7 +1851,7 @@ extern P_NtEnumerateValueKey        __sys_NtEnumerateValueKey;
 extern P_NtDeviceIoControlFile      __sys_NtDeviceIoControlFile;
 
 
-void* SbieDll_GetSysFunction(const WCHAR* name)
+void* CobraSboxDll_GetSysFunction(const WCHAR* name)
 {
     if (name == NULL)                                       return SbieApi_DeviceHandle;
     if (_wcsicmp(name, L"NtCreateFile") == 0)               return __sys_NtCreateFile;
@@ -1864,11 +1864,11 @@ void* SbieDll_GetSysFunction(const WCHAR* name)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_RunStartExe
+// CobraSboxDll_RunStartExe
 //---------------------------------------------------------------------------
 
 
-BOOL SbieDll_RunStartExe(const WCHAR* cmd, const wchar_t* boxname)
+BOOL CobraSboxDll_RunStartExe(const WCHAR* cmd, const wchar_t* boxname)
 {
     WCHAR cmdline[MAX_PATH] = L"";
 
@@ -1886,7 +1886,7 @@ BOOL SbieDll_RunStartExe(const WCHAR* cmd, const wchar_t* boxname)
     //if (inherit) si.lpReserved = (LPTSTR)1;
     BOOL ret = FALSE;
 
-    if ( SbieDll_RunFromHome(START_EXE, cmdline, &si, &pi)) {
+    if ( CobraSboxDll_RunFromHome(START_EXE, cmdline, &si, &pi)) {
 
         ret = TRUE;
 

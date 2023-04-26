@@ -33,7 +33,7 @@
 #include "misc.h"
 #include "common/defines.h"
 #include "common/my_version.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "core/drv/api_defs.h"
 #include <sddl.h>
 #include "sbieiniserver.h"
@@ -561,9 +561,9 @@ MSG_HEADER *ProcessServer::RunSandboxedHandler(MSG_HEADER *msg)
                         // if its a BreakoutProcess we must also test if the path is not in the sandbox itself
                         //
 
-                        if ((SbieDll_CheckStringInList(lpProgram + 1, boxname, L"BreakoutProcess")
+                        if ((CobraSboxDll_CheckStringInList(lpProgram + 1, boxname, L"BreakoutProcess")
                             && IsHostPath((HANDLE)(ULONG_PTR)CallerPid, lpApplicationName))
-                            || SbieDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName), boxname, L"BreakoutFolder")) {
+                            || CobraSboxDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName), boxname, L"BreakoutFolder")) {
 
                             //
                             // this is a breakout process, it is allowed to leave the sandbox
@@ -585,8 +585,8 @@ MSG_HEADER *ProcessServer::RunSandboxedHandler(MSG_HEADER *msg)
                                 if (!NT_SUCCESS(SbieApi_Call(API_IS_BOX_ENABLED, 3, (ULONG_PTR)BoxName, (ULONG_PTR)sid, (ULONG_PTR)session_id)))
                                     continue;
 
-                                if (SbieDll_CheckStringInList(lpProgram + 1, BoxName, L"ForceProcess")
-                                    || SbieDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName), BoxName, L"ForceFolder")) {
+                                if (CobraSboxDll_CheckStringInList(lpProgram + 1, BoxName, L"ForceProcess")
+                                    || CobraSboxDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName), BoxName, L"ForceFolder")) {
 
                                     //
                                     // check if the breakout process is supposed to end in the box it is trying to break out of

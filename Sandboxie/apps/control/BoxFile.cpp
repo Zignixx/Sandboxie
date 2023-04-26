@@ -365,15 +365,15 @@ CString CBoxFile::GetCopyPathForTruePath(const WCHAR *TruePath) const
 
         const WCHAR *prefix = NULL;
         if (index == -4)
-			prefix = SbieDll_GetUserPathEx(L'p');
+			prefix = CobraSboxDll_GetUserPathEx(L'p');
         else if (index == -3)
-            prefix = SbieDll_GetUserPathEx(L'a');
+            prefix = CobraSboxDll_GetUserPathEx(L'a');
         else if (index == -2)
-            prefix = SbieDll_GetUserPathEx(L'c');
+            prefix = CobraSboxDll_GetUserPathEx(L'c');
         else if (index == -1)
 			prefix = L"\\device\\mup"; 
         else
-            prefix = SbieDll_GetDrivePath(index);
+            prefix = CobraSboxDll_GetDrivePath(index);
         if (! prefix)
             continue;
 
@@ -459,13 +459,13 @@ CString CBoxFile::GetTruePathForCopyPath(const WCHAR *CopyPath) const
             if (index == -4)
                 prefix = L"\\";
             else if (index == -3)
-                prefix = SbieDll_GetUserPathEx(L'a');
+                prefix = CobraSboxDll_GetUserPathEx(L'a');
             else if (index == -2)
-                prefix = SbieDll_GetUserPathEx(L'c');
+                prefix = CobraSboxDll_GetUserPathEx(L'c');
             else if (index == -1)
-                prefix = SbieDll_GetUserPathEx(L'p');
+                prefix = CobraSboxDll_GetUserPathEx(L'p');
             else
-                prefix = SbieDll_GetDrivePath(index);
+                prefix = CobraSboxDll_GetDrivePath(index);
             CString TruePath =
                 CString(prefix) + CString(&CopyPath[prefix_len]);
             return TruePath;
@@ -487,7 +487,7 @@ CString CBoxFile::GetDriveNameForTruePath(const WCHAR *TruePath) const
 
     for (int index = 0; index < 26; ++index) {
 
-        const WCHAR *prefix = SbieDll_GetDrivePath(index);
+        const WCHAR *prefix = CobraSboxDll_GetDrivePath(index);
         if (! prefix)
             continue;
 
@@ -515,7 +515,7 @@ void CBoxFile::TranslateNtToDosPath(CString &InOutPath) const
     WCHAR *path;
     path = malloc_WCHAR((InOutPath.GetLength() + 8) * sizeof(WCHAR));
     wcscpy(path, InOutPath);
-    SbieDll_TranslateNtToDosPath(path);
+    CobraSboxDll_TranslateNtToDosPath(path);
     InOutPath = path;
     free(path);
     if (InOutPath.GetLength() == 2 && InOutPath.Mid(1, 1) == L':')
@@ -1155,5 +1155,5 @@ BOOL CBoxFile::QueryFileAttributes(
     const WCHAR *path, ULONG *attrs, ULONG64 *size)
 {
     CString prefixed_path = CString(L"\\??\\") + path;
-    return SbieDll_QueryFileAttributes((const WCHAR*)prefixed_path, size, NULL, attrs);
+    return CobraSboxDll_QueryFileAttributes((const WCHAR*)prefixed_path, size, NULL, attrs);
 }

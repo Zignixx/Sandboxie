@@ -34,7 +34,7 @@
 #if defined(_M_ARM64) || defined(_M_ARM64EC)
 void* Hook_GetFFSTarget(void* ptr);
 void* Hook_GetXipTarget(void* ptr, int mode);
-void* SbieDll_Hook_arm(const char* SourceFuncName, void* SourceFunc, void* DetourFunc, HMODULE module);
+void* CobraSboxDll_Hook_arm(const char* SourceFuncName, void* SourceFunc, void* DetourFunc, HMODULE module);
 #endif
 
 //---------------------------------------------------------------------------
@@ -564,7 +564,7 @@ import_fail:
         if (ok)
             ok = Gui_InitWinHooks(module);
 
-        SBIEDLL_HOOK_GUI(AttachThreadInput);
+        CobraSboxDll_HOOK_GUI(AttachThreadInput);
     }
 
     return ok;
@@ -578,20 +578,20 @@ import_fail:
 
 _FX BOOLEAN Gui_Init2(HMODULE module)
 {
-    SBIEDLL_HOOK_GUI(ExitWindowsEx);
-    SBIEDLL_HOOK_GUI(EndTask);
+    CobraSboxDll_HOOK_GUI(ExitWindowsEx);
+    CobraSboxDll_HOOK_GUI(EndTask);
     // NoSbieCons BEGIN
     if (!Dll_CompartmentMode && !SbieApi_QueryConfBool(NULL, L"NoSandboxieConsole", FALSE))
 	// NoSbieCons END
     if (__sys_ConsoleControl) {
-        SBIEDLL_HOOK_GUI(ConsoleControl);
+        CobraSboxDll_HOOK_GUI(ConsoleControl);
     }
 
     //if (Gui_RenameClasses) {
     if (! Dll_SkipHook(L"createwin")) {
 
-        SBIEDLL_HOOK_GUI(CreateWindowExA);
-        SBIEDLL_HOOK_GUI(CreateWindowExW);
+        CobraSboxDll_HOOK_GUI(CreateWindowExA);
+        CobraSboxDll_HOOK_GUI(CreateWindowExW);
     }
 
     if (! Dll_KernelBase) {
@@ -600,43 +600,43 @@ _FX BOOLEAN Gui_Init2(HMODULE module)
         // see Gui_InitWindows7
         //
 
-        SBIEDLL_HOOK_GUI(DefWindowProcA);
-        SBIEDLL_HOOK_GUI(DefWindowProcW);
+        CobraSboxDll_HOOK_GUI(DefWindowProcA);
+        CobraSboxDll_HOOK_GUI(DefWindowProcW);
     }
 
 
-    SBIEDLL_HOOK_GUI(SetThreadDesktop);
-    SBIEDLL_HOOK_GUI(SwitchDesktop);
+    CobraSboxDll_HOOK_GUI(SetThreadDesktop);
+    CobraSboxDll_HOOK_GUI(SwitchDesktop);
 
-    SBIEDLL_HOOK_GUI(MessageBoxW);
-    SBIEDLL_HOOK_GUI(MessageBoxExW);
+    CobraSboxDll_HOOK_GUI(MessageBoxW);
+    CobraSboxDll_HOOK_GUI(MessageBoxExW);
 
     if (! Gui_OpenAllWinClasses) {
 
-        SBIEDLL_HOOK_GUI(UserHandleGrantAccess);
+        CobraSboxDll_HOOK_GUI(UserHandleGrantAccess);
 
         if(Gui_UseProxyService) {
-            SBIEDLL_HOOK_GUI(IsWindow);
-            SBIEDLL_HOOK_GUI(IsWindowEnabled);
-            SBIEDLL_HOOK_GUI(IsWindowVisible);
-            SBIEDLL_HOOK_GUI(IsWindowUnicode);
-            SBIEDLL_HOOK_GUI(IsIconic);
-            SBIEDLL_HOOK_GUI(IsZoomed);
+            CobraSboxDll_HOOK_GUI(IsWindow);
+            CobraSboxDll_HOOK_GUI(IsWindowEnabled);
+            CobraSboxDll_HOOK_GUI(IsWindowVisible);
+            CobraSboxDll_HOOK_GUI(IsWindowUnicode);
+            CobraSboxDll_HOOK_GUI(IsIconic);
+            CobraSboxDll_HOOK_GUI(IsZoomed);
         }
 
-        SBIEDLL_HOOK_GUI(MoveWindow);
-        SBIEDLL_HOOK_GUI(SetWindowPos);
+        CobraSboxDll_HOOK_GUI(MoveWindow);
+        CobraSboxDll_HOOK_GUI(SetWindowPos);
         if (Gui_UseProxyService) {
-            SBIEDLL_HOOK_GUI(MapWindowPoints);
-            SBIEDLL_HOOK_GUI(ClientToScreen);
-            SBIEDLL_HOOK_GUI(ScreenToClient);
-            SBIEDLL_HOOK_GUI(GetClientRect);
-            SBIEDLL_HOOK_GUI(GetWindowRect);
-            SBIEDLL_HOOK_GUI(GetWindowInfo);
+            CobraSboxDll_HOOK_GUI(MapWindowPoints);
+            CobraSboxDll_HOOK_GUI(ClientToScreen);
+            CobraSboxDll_HOOK_GUI(ScreenToClient);
+            CobraSboxDll_HOOK_GUI(GetClientRect);
+            CobraSboxDll_HOOK_GUI(GetWindowRect);
+            CobraSboxDll_HOOK_GUI(GetWindowInfo);
         }
-        SBIEDLL_HOOK_GUI(AnimateWindow);
-        SBIEDLL_HOOK_GUI(WaitForInputIdle);
-        SBIEDLL_HOOK_GUI(ActivateKeyboardLayout);
+        CobraSboxDll_HOOK_GUI(AnimateWindow);
+        CobraSboxDll_HOOK_GUI(WaitForInputIdle);
+        CobraSboxDll_HOOK_GUI(ActivateKeyboardLayout);
     }
 
     if (! Gui_InitMisc(module))
@@ -664,15 +664,15 @@ _FX BOOLEAN Gui_Init3(HMODULE module)
     if (__sys_RegisterDeviceNotificationA ==
                                         __sys_RegisterDeviceNotificationW) {
 
-        SBIEDLL_HOOK_GUI(RegisterDeviceNotificationW);
+        CobraSboxDll_HOOK_GUI(RegisterDeviceNotificationW);
 
     } else {
 
-        SBIEDLL_HOOK_GUI(RegisterDeviceNotificationA);
-        SBIEDLL_HOOK_GUI(RegisterDeviceNotificationW);
+        CobraSboxDll_HOOK_GUI(RegisterDeviceNotificationA);
+        CobraSboxDll_HOOK_GUI(RegisterDeviceNotificationW);
     }
 
-    SBIEDLL_HOOK_GUI(UnregisterDeviceNotification);
+    CobraSboxDll_HOOK_GUI(UnregisterDeviceNotification);
 
     return TRUE;
 }
@@ -756,10 +756,10 @@ _FX void Gui_InitWindows7(void)
                 Target = Hook_GetXipTarget(Target, 1); // adrp add br
                 Target = Hook_GetXipTarget(Target, 0); // adrp ldr br
                 
-                *pSourceFunc = (ULONG_PTR)SbieDll_Hook_arm(
+                *pSourceFunc = (ULONG_PTR)CobraSboxDll_Hook_arm(
                     FuncName, Target, DetourFunc, NULL);
             }
-            else // fall back to SbieDll_Hook
+            else // fall back to CobraSboxDll_Hook
 #else
 
 #ifdef _M_ARM64
@@ -798,7 +798,7 @@ _FX void Gui_InitWindows7(void)
 
 #endif
 #endif
-            *pSourceFunc = (ULONG_PTR)SbieDll_Hook(
+            *pSourceFunc = (ULONG_PTR)CobraSboxDll_Hook(
                 FuncName, (void *)(*pSourceFunc), DetourFunc, NULL);
         }
     }
@@ -1533,7 +1533,7 @@ _FX BOOLEAN Gui_CanForwardMsg(
 
     } else if (uMsg == WM_DEVICECHANGE) {
 
-        SbieDll_DeviceChange(wParam, lParam);
+        CobraSboxDll_DeviceChange(wParam, lParam);
 
     } else if (uMsg == WM_COPYDATA) {
 
@@ -2034,7 +2034,7 @@ _FX BOOL Gui_ConsoleControl(ULONG ctlcode, ULONG *data, ULONG_PTR unknown)
         // ctlcode 7 to terminate counterpart process.
         // data[0] specifies pid, data[1] specifies HWND
         //
-        BOOLEAN ok = SbieDll_KillOne(*data);
+        BOOLEAN ok = CobraSboxDll_KillOne(*data);
         if (ok)
             return STATUS_SUCCESS;
         //SbieApi_Log(2205, L"ConsoleControl"); // don't log when the process was already killed
@@ -2089,7 +2089,7 @@ _FX BOOL Gui_UnregisterDeviceNotification(ULONG_PTR Handle)
 _FX void Gui_AllowSetForegroundWindow(void)
 {
     //
-    // this function is typically used prior to calling SbieDll_CallServer
+    // this function is typically used prior to calling CobraSboxDll_CallServer
     // in a scenario where SbieSvc might display a pop up window and we
     // want to let this window go to the foreground
     //
@@ -2569,7 +2569,7 @@ _FX void *Gui_CallProxyEx(
         }
     }
 
-    status = SbieDll_QueuePutReq(_QueueName, req, req_len, &req_id, &event);
+    status = CobraSboxDll_QueuePutReq(_QueueName, req, req_len, &req_id, &event);
     if (NT_SUCCESS(status)) {
 
         if (msgwait) {
@@ -2642,7 +2642,7 @@ _FX void *Gui_CallProxyEx(
 
     if (status == 0) {
 
-        status = SbieDll_QueueGetRpl(_QueueName, req_id, &data, &data_len);
+        status = CobraSboxDll_QueueGetRpl(_QueueName, req_id, &data, &data_len);
 
         if (NT_SUCCESS(status)) {
 
@@ -2695,7 +2695,7 @@ _FX BOOLEAN ComDlg32_Init(HMODULE module)
     //if (_wcsicmp(Dll_ImageName, L"opera.exe") == 0)
     //{
         void *GetOpenFileNameW = GetProcAddress(module, "GetOpenFileNameW");
-        SBIEDLL_HOOK(ComDlg32_, GetOpenFileNameW);
+        CobraSboxDll_HOOK(ComDlg32_, GetOpenFileNameW);
     //}
 
     return TRUE;

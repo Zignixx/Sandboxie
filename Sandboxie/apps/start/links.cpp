@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "common/defines.h"
 
 
@@ -363,7 +363,7 @@ extern "C" BOOL ResolveExtension(WCHAR *path)
     if (_wcsnicmp(dot, L".exe", 4) == 0)
         return TRUE;
 
-    WCHAR *cmd = SbieDll_AssocQueryCommand(dot);
+    WCHAR *cmd = CobraSboxDll_AssocQueryCommand(dot);
     if (! cmd)
         return TRUE;
 
@@ -424,7 +424,7 @@ BOOL ResolveDirectory(WCHAR *PathW)
         GetFullPathName(PathUnquoted, 10236, Folder, &FileNamePtr);
     }
 
-    if (SbieDll_IsDirectory(Folder)) {
+    if (CobraSboxDll_IsDirectory(Folder)) {
 
         PathW[0] = L'\"';
         GetSystemWindowsDirectory(&PathW[1], MAX_PATH);

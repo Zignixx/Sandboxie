@@ -38,7 +38,7 @@
 #include "queueserver.h"
 #include "EpMapperServer.h"
 #include "misc.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "common/my_version.h"
 #include "common/defines.h"
 
@@ -178,7 +178,7 @@ void WINAPI ServiceMain(DWORD argc, WCHAR *argv[])
     if (status == 0) {
         status = InitializePipe();
 
-		SbieDll_DisableCHPE();
+		CobraSboxDll_DisableCHPE();
     }
 
     if (status == 0) {
@@ -520,7 +520,7 @@ bool CheckDropRights(const WCHAR *BoxName, const WCHAR *ExeName)
     //    return false; // if we are not swapping the token we can not drop admin rights so keep this consistent
     if (SbieApi_QueryConfBool(BoxName, L"UseSecurityMode", FALSE))
         return true;
-    if (SbieDll_GetSettingsForName_bool(BoxName, ExeName, L"DropAdminRights", FALSE))
+    if (CobraSboxDll_GetSettingsForName_bool(BoxName, ExeName, L"DropAdminRights", FALSE))
         return true;
     return false;
 }

@@ -17,7 +17,7 @@
  */
 
 //---------------------------------------------------------------------------
-// SbieDLL Hook Management
+// CobraSboxDll Hook Management
 //---------------------------------------------------------------------------
 
 
@@ -43,7 +43,7 @@
 
 ULONG_PTR  DLL_FindWow64Target(ULONG_PTR address);
 
-BOOLEAN SbieDll_FuncSkipHook(const char* func);
+BOOLEAN CobraSboxDll_FuncSkipHook(const char* func);
 
 //---------------------------------------------------------------------------
 // Variables
@@ -96,7 +96,7 @@ static const WCHAR *_fmt2 = L"%s (%d, %d)";
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_HookInit()
+_FX void CobraSboxDll_HookInit()
 {
     InitializeCriticalSection(&Dll_ModuleHooks_CritSec);
     List_Init(&Dll_ModuleHooks);
@@ -108,11 +108,11 @@ _FX void SbieDll_HookInit()
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetModuleHookAndLock
+// CobraSboxDll_GetModuleHookAndLock
 //---------------------------------------------------------------------------
 
 
-_FX MODULE_HOOK* SbieDll_GetModuleHookAndLock(HMODULE module, ULONG tag)
+_FX MODULE_HOOK* CobraSboxDll_GetModuleHookAndLock(HMODULE module, ULONG tag)
 {
     //
     // Get the module hook resource for this module, if module is NULL
@@ -158,12 +158,12 @@ _FX MODULE_HOOK* SbieDll_GetModuleHookAndLock(HMODULE module, ULONG tag)
 }
 
 //---------------------------------------------------------------------------
-// SbieDll_GetHookTable
+// CobraSboxDll_GetHookTable
 //---------------------------------------------------------------------------
 
 
 #ifdef _WIN64
-_FX VECTOR_TABLE* SbieDll_GetHookTable(MODULE_HOOK* mod_hook, ULONG_PTR target, __int64 maxDelta, BOOLEAN longRange)
+_FX VECTOR_TABLE* CobraSboxDll_GetHookTable(MODULE_HOOK* mod_hook, ULONG_PTR target, __int64 maxDelta, BOOLEAN longRange)
 {
     ULONG_PTR diff;
     __int64 delta;
@@ -321,11 +321,11 @@ _FX LONG SbieApi_HookTramp(void *Source, void *Trampoline)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_Hook_x86
+// CobraSboxDll_Hook_x86
 //---------------------------------------------------------------------------
 
 
-_FX void *SbieDll_Hook_x86(
+_FX void *CobraSboxDll_Hook_x86(
     const char *SourceFuncName, void *SourceFunc, void *DetourFunc, HMODULE module)
 {
     UCHAR *tramp, *func = NULL;
@@ -475,7 +475,7 @@ skip_e9_rewrite: ;
     // Get the module hook object and obtain lock on critical section
     //
 
-    MODULE_HOOK* mod_hook = SbieDll_GetModuleHookAndLock(module, tzuk | 0xFF);
+    MODULE_HOOK* mod_hook = CobraSboxDll_GetModuleHookAndLock(module, tzuk | 0xFF);
     if (!mod_hook) {
         SbieApi_Log(2303, _fmt1, SourceFuncName, 5);
         goto finish;
@@ -637,7 +637,7 @@ skip_e9_rewrite: ;
         
         target = (ULONG_PTR)&func[6];
 
-        VECTOR_TABLE* ptrVTable = SbieDll_GetHookTable(mod_hook, target, 0x80000000, TRUE);
+        VECTOR_TABLE* ptrVTable = CobraSboxDll_GetHookTable(mod_hook, target, 0x80000000, TRUE);
         if (!ptrVTable) {
             // OutputDebugStringA("Memory alloc failed: 12 Byte Patch Disabled\n");
             SbieApi_Log(2303, _fmt1, SourceFuncName, 999);
@@ -843,11 +843,11 @@ PBYTE arm64_detour_gen_brk(PBYTE pbCode, PBYTE pbLimit)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_Hook_arm
+// CobraSboxDll_Hook_arm
 //---------------------------------------------------------------------------
 
 
-void* SbieDll_Hook_arm(
+void* CobraSboxDll_Hook_arm(
     const char* SourceFuncName, void* SourceFunc, void* DetourFunc, HMODULE module)
 {
     UCHAR *tramp, *func = NULL;
@@ -871,9 +871,9 @@ void* SbieDll_Hook_arm(
     //
 
 #ifdef _M_ARM64EC
-    MODULE_HOOK* mod_hook = SbieDll_GetModuleHookAndLock(module, (tzuk & 0xFFFFFF00) | 0xEC);
+    MODULE_HOOK* mod_hook = CobraSboxDll_GetModuleHookAndLock(module, (tzuk & 0xFFFFFF00) | 0xEC);
 #else
-    MODULE_HOOK* mod_hook = SbieDll_GetModuleHookAndLock(module, tzuk | 0xFF);
+    MODULE_HOOK* mod_hook = CobraSboxDll_GetModuleHookAndLock(module, tzuk | 0xFF);
 #endif
     if (!mod_hook) {
         SbieApi_Log(2303, _fmt1, SourceFuncName, 5);
@@ -1091,7 +1091,7 @@ void* SbieDll_Hook_arm(
 
         target = (ULONG_PTR)&func[0];
 
-        VECTOR_TABLE* ptrVTable = SbieDll_GetHookTable(mod_hook, target, 0x08000000, FALSE); // +/-128MB
+        VECTOR_TABLE* ptrVTable = CobraSboxDll_GetHookTable(mod_hook, target, 0x08000000, FALSE); // +/-128MB
         if (!ptrVTable) {
             // OutputDebugStringA("Memory alloc failed: 12 Byte Patch Disabled\n");
             SbieApi_Log(2303, _fmt1, SourceFuncName, 999);
@@ -1149,14 +1149,14 @@ finish:
 
 
 //---------------------------------------------------------------------------
-// SbieDll_Hook
+// CobraSboxDll_Hook
 //---------------------------------------------------------------------------
 
 
-_FX void *SbieDll_Hook(
+_FX void *CobraSboxDll_Hook(
     const char *SourceFuncName, void *SourceFunc, void *DetourFunc, HMODULE module)
 {
-    if (SbieDll_FuncSkipHook(SourceFuncName))
+    if (CobraSboxDll_FuncSkipHook(SourceFuncName))
         return SourceFunc;
 
     //if (Dll_SbieTrace) {
@@ -1197,12 +1197,12 @@ _FX void *SbieDll_Hook(
         USHORT index = Hook_GetSysCallIndex(SourceFunc);
         if (index != 0xFFFF) {
 
-            ULONG SbieDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index);
-            ULONG offset = SbieDll_GetSysCallOffset(SbieApi_SyscallPtr, index);
+            ULONG CobraSboxDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index);
+            ULONG offset = CobraSboxDll_GetSysCallOffset(SbieApi_SyscallPtr, index);
             if (offset) {
 
                 void* SourceFuncEC = (void*)((UINT_PTR)Dll_Ntdll + offset);
-                return SbieDll_Hook_arm(SourceFuncName, SourceFuncEC, DetourFunc, module);
+                return CobraSboxDll_Hook_arm(SourceFuncName, SourceFuncEC, DetourFunc, module);
             }
             //else // hook disabled in driver like NtTerminateProcess
             //    SbieApi_Log(2303, _fmt2, SourceFuncName, 69, 2);
@@ -1222,7 +1222,7 @@ _FX void *SbieDll_Hook(
         void* SourceFuncEC = Hook_GetFFSTarget(SourceFunc);
         if (SourceFuncEC) {
 
-            return SbieDll_Hook_arm(SourceFuncName, SourceFuncEC, DetourFunc, module);
+            return CobraSboxDll_Hook_arm(SourceFuncName, SourceFuncEC, DetourFunc, module);
         }
         else
             SbieApi_Log(2303, _fmt1, SourceFuncName, 69);
@@ -1230,19 +1230,19 @@ _FX void *SbieDll_Hook(
 
 #endif
 #ifdef _M_ARM64
-    return SbieDll_Hook_arm(SourceFuncName, SourceFunc, DetourFunc, module);
+    return CobraSboxDll_Hook_arm(SourceFuncName, SourceFunc, DetourFunc, module);
 #else
-    return SbieDll_Hook_x86(SourceFuncName, SourceFunc, DetourFunc, module);
+    return CobraSboxDll_Hook_x86(SourceFuncName, SourceFunc, DetourFunc, module);
 #endif
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_UnHookModule
+// CobraSboxDll_UnHookModule
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_UnHookModule(HMODULE module)
+_FX void CobraSboxDll_UnHookModule(HMODULE module)
 {
     EnterCriticalSection(&Dll_ModuleHooks_CritSec);
 
@@ -1278,11 +1278,11 @@ _FX void SbieDll_UnHookModule(HMODULE module)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FuncSkipHook
+// CobraSboxDll_FuncSkipHook
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_FuncSkipHook(const char* func)
+BOOLEAN CobraSboxDll_FuncSkipHook(const char* func)
 {
     static const WCHAR* setting = L"FuncSkipHook";
 
@@ -1851,7 +1851,7 @@ _FX ULONG_PTR  DLL_FindWow64Target(ULONG_PTR address)
 #endif ! _WIN64
 
 
-_FX VOID SbieDll_DumpProlog(void* addr, const wchar_t* func)
+_FX VOID CobraSboxDll_DumpProlog(void* addr, const wchar_t* func)
 {
     wchar_t buffer[1024];
     wchar_t* ptr = buffer;

@@ -385,7 +385,7 @@ _FX BOOLEAN Ldr_LoadAndFix_IsClosedFilePath(const WCHAR *DllName)
     // match ClosedFilePath=*\name.dll settings
     //
 
-    mp_flags = SbieDll_MatchPath(L'f', DllName);
+    mp_flags = CobraSboxDll_MatchPath(L'f', DllName);
     if (PATH_IS_CLOSED(mp_flags))
         return TRUE;
 
@@ -396,7 +396,7 @@ _FX BOOLEAN Ldr_LoadAndFix_IsClosedFilePath(const WCHAR *DllName)
     ptr = Dll_AllocTemp((wcslen(DllName) + 8) * sizeof(WCHAR));
     wcscpy(ptr, L"X\\");
     wcscat(ptr, DllName);
-    mp_flags = SbieDll_MatchPath(L'f', ptr);
+    mp_flags = CobraSboxDll_MatchPath(L'f', ptr);
     Dll_Free(ptr);
     if (PATH_IS_CLOSED(mp_flags))
         return TRUE;
@@ -543,7 +543,7 @@ _FX WCHAR *Ldr_FixImagePath_2(void)
     }
 
     NameUni->Buffer[NameUni->Length / sizeof(WCHAR)] = L'\0';
-    if (! SbieDll_TranslateNtToDosPath(NameUni->Buffer)) {
+    if (! CobraSboxDll_TranslateNtToDosPath(NameUni->Buffer)) {
         Dll_Free(NameUni);
         return NULL;
     }
@@ -638,7 +638,7 @@ _FX void Ldr_FixImagePath_DllPath(void)
                     Dll_AllocTemp((Dll_BoxFilePathLen + 64) * sizeof(WCHAR));
         wmemcpy(DosFilePath, Dll_BoxFilePath, Dll_BoxFilePathLen + 1);
 
-        if (SbieDll_TranslateNtToDosPath(DosFilePath))
+        if (CobraSboxDll_TranslateNtToDosPath(DosFilePath))
             DosFilePath_Len = wcslen(DosFilePath);
         else
             DosFilePath_Len = 0;

@@ -88,7 +88,7 @@ _FX int Trace_Init(void)
         if (SbieApi_QueryConfBool(NULL, L"ErrorTrace", FALSE)) {
             RtlSetLastWin32Error = (P_RtlSetLastWin32Error)
                 GetProcAddress(Dll_Ntdll, "RtlSetLastWin32Error");
-            SBIEDLL_HOOK(Trace_, RtlSetLastWin32Error);
+            CobraSboxDll_HOOK(Trace_, RtlSetLastWin32Error);
         }
 
         //
@@ -97,14 +97,14 @@ _FX int Trace_Init(void)
 
         OutputDebugStringW = (P_OutputDebugString)
             GetProcAddress(Dll_Kernel32, "OutputDebugStringW");
-        SBIEDLL_HOOK(Trace_, OutputDebugStringW);
+        CobraSboxDll_HOOK(Trace_, OutputDebugStringW);
 
         OutputDebugStringA = (P_OutputDebugString)
             GetProcAddress(Dll_Kernel32, "OutputDebugStringA");
-        SBIEDLL_HOOK(Trace_, OutputDebugStringA);
+        CobraSboxDll_HOOK(Trace_, OutputDebugStringA);
 
 
-        OutputDebugString(L"SbieDll injected...\n");
+        OutputDebugString(L"CobraSboxDll injected...\n");
         for (int i = 0; i < 16; i++) {
             if (SbieApi_data->DebugData[i] != 0)
                 DbgPrint("DebugData[%d]: %p\n", i, (UINT_PTR)SbieApi_data->DebugData[i]);

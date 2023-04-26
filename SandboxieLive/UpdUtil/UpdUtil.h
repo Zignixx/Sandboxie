@@ -5,16 +5,16 @@
 #define UPDATE_FILE			"update.json"
 
 
-#define SCOPE_CORE_FILES	L"32\\SbieDll.dll\0"\
+#define SCOPE_CORE_FILES	L"32\\CobraSboxDll.dll\0"\
 							L"32\\SbieSvc.exe\0"\
-							L"64\\SbieDll.dll\0"\
+							L"64\\CobraSboxDll.dll\0"\
 							L"KmdUtil.exe\0"\
 							L"Sandboxie*.exe\0"\
 							L"SbieCtrl.exe\0"\
 							L"SbieIni.exe\0"\
 							L"SbieSvc.exe\0"\
 							L"Start.exe\0"\
-							L"SbieDll.dll\0"\
+							L"CobraSboxDll.dll\0"\
 							L"SboxHostDll.dll\0"\
 							L"SbieDrv.sys\0"\
 							L"Manifest?.txt\0"

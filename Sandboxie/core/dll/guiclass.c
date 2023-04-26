@@ -198,24 +198,24 @@ _FX BOOLEAN Gui_InitClass(HMODULE module)
     if (Gui_OpenAllWinClasses)
         return TRUE;
 
-    SBIEDLL_HOOK_GUI(GetClassNameA);
-    SBIEDLL_HOOK_GUI(GetClassNameW);
+    CobraSboxDll_HOOK_GUI(GetClassNameA);
+    CobraSboxDll_HOOK_GUI(GetClassNameW);
 
     if (! Gui_RenameClasses)
         return TRUE;
 
-    SBIEDLL_HOOK_GUI(GetClassInfoA);
-    SBIEDLL_HOOK_GUI(GetClassInfoW);
-    SBIEDLL_HOOK_GUI(GetClassInfoExA);
-    SBIEDLL_HOOK_GUI(GetClassInfoExW);
+    CobraSboxDll_HOOK_GUI(GetClassInfoA);
+    CobraSboxDll_HOOK_GUI(GetClassInfoW);
+    CobraSboxDll_HOOK_GUI(GetClassInfoExA);
+    CobraSboxDll_HOOK_GUI(GetClassInfoExW);
 
-    SBIEDLL_HOOK_GUI(RegisterClassA);
-    SBIEDLL_HOOK_GUI(RegisterClassW);
-    SBIEDLL_HOOK_GUI(RegisterClassExA);
-    SBIEDLL_HOOK_GUI(RegisterClassExW);
+    CobraSboxDll_HOOK_GUI(RegisterClassA);
+    CobraSboxDll_HOOK_GUI(RegisterClassW);
+    CobraSboxDll_HOOK_GUI(RegisterClassExA);
+    CobraSboxDll_HOOK_GUI(RegisterClassExW);
 
-    SBIEDLL_HOOK_GUI(UnregisterClassA);
-    SBIEDLL_HOOK_GUI(UnregisterClassW);
+    CobraSboxDll_HOOK_GUI(UnregisterClassA);
+    CobraSboxDll_HOOK_GUI(UnregisterClassW);
 
     return TRUE;
 }
@@ -1033,7 +1033,7 @@ _FX BOOLEAN Gui_IsOpenClass(const WCHAR *ClassName)
 
         if (! Gui_MatchPath_Initialized) {
 
-            mp_flags = SbieDll_MatchPath(L'w', (const WCHAR *)-1);
+            mp_flags = CobraSboxDll_MatchPath(L'w', (const WCHAR *)-1);
 
             Gui_MatchPath_Initialized = TRUE;
         }
@@ -1045,7 +1045,7 @@ _FX BOOLEAN Gui_IsOpenClass(const WCHAR *ClassName)
     // check the openness for the specified class name
     //
 
-    mp_flags = SbieDll_MatchPath(L'w', ClassName);
+    mp_flags = CobraSboxDll_MatchPath(L'w', ClassName);
     if (PATH_IS_OPEN(mp_flags))
         return TRUE;
 
@@ -1133,7 +1133,7 @@ _FX BOOLEAN Gui_IsWindowAccessible(HWND hWnd)
         if ((! allow) && idProcess) {
 
             NTSTATUS status;
-            HANDLE hProcess = SbieDll_OpenProcess(PROCESS_QUERY_INFORMATION, (HANDLE)idProcess);
+            HANDLE hProcess = CobraSboxDll_OpenProcess(PROCESS_QUERY_INFORMATION, (HANDLE)idProcess);
             if (hProcess) {
 
                 ULONG len;

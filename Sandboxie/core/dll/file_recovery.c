@@ -541,7 +541,7 @@ _FX void File_DoAutoRecover_2(BOOLEAN force, ULONG ticks)
         MSG_HEADER req;
         req.length = sizeof(req);
         req.msgid = MSGID_FILE_GET_ALL_HANDLES;
-        rpl = (FILE_GET_ALL_HANDLES_RPL *)SbieDll_CallServer(&req);
+        rpl = (FILE_GET_ALL_HANDLES_RPL *)CobraSboxDll_CallServer(&req);
 
         if (rpl) {
             info = NULL;

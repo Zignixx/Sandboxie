@@ -9,7 +9,7 @@ Please note: there is another [ReadMe.md](./install/ReadMe.md) file in the [\ins
 
 ### Source Projects (in alphabetical order)
 
-Note: the core of Sandboxie are the driver, SbieDrv, the service, SbieSvc, and the injection DLL, SbieDll. Study these projects first.
+Note: the core of Sandboxie are the driver, SbieDrv, the service, SbieSvc, and the injection DLL, CobraSboxDll. Study these projects first.
 
 [Common (\apps\common)](./apps/common). It builds common.lib, which contains some common GUI objects, and it is used by the Control and Start projects.
 

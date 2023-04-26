@@ -72,7 +72,7 @@ _FX BOOLEAN Lsa_Init_Common(const WCHAR *DllName, HMODULE module)
     LsaRegisterLogonProcess = (P_LsaRegisterLogonProcess)
         Ldr_GetProcAddrNew(DllName, L"LsaRegisterLogonProcess","LsaRegisterLogonProcess");
 
-    SBIEDLL_HOOK(Lsa_,LsaRegisterLogonProcess);
+    CobraSboxDll_HOOK(Lsa_,LsaRegisterLogonProcess);
 
     return TRUE;
 }

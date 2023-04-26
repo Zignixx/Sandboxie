@@ -372,29 +372,29 @@ _FX BOOLEAN Secure_Init(void)
     // intercept NTDLL entry points
     //
     if (!Dll_CompartmentMode && !SbieApi_QueryConfBool(NULL, L"NoSysCallHooks", FALSE)) {
-        SBIEDLL_HOOK(Secure_, NtOpenProcess);
-        SBIEDLL_HOOK(Secure_, NtOpenThread);
-        SBIEDLL_HOOK(Secure_, NtDuplicateObject);
+        CobraSboxDll_HOOK(Secure_, NtOpenProcess);
+        CobraSboxDll_HOOK(Secure_, NtOpenThread);
+        CobraSboxDll_HOOK(Secure_, NtDuplicateObject);
     }
-    SBIEDLL_HOOK(Secure_,NtQuerySecurityObject);
-    SBIEDLL_HOOK(Secure_,NtSetSecurityObject);
-    SBIEDLL_HOOK(Secure_,NtSetInformationToken);
-    SBIEDLL_HOOK(Secure_,NtAdjustPrivilegesToken);
+    CobraSboxDll_HOOK(Secure_,NtQuerySecurityObject);
+    CobraSboxDll_HOOK(Secure_,NtSetSecurityObject);
+    CobraSboxDll_HOOK(Secure_,NtSetInformationToken);
+    CobraSboxDll_HOOK(Secure_,NtAdjustPrivilegesToken);
     // OriginalToken BEGIN
     if (!Dll_CompartmentMode && !SbieApi_QueryConfBool(NULL, L"OriginalToken", FALSE))
     // OriginalToken END
     if (Dll_OsBuild >= 21286) {    // Windows 11
-        SBIEDLL_HOOK(Secure_, NtDuplicateToken);
-        SBIEDLL_HOOK(Secure_, NtFilterToken);
+        CobraSboxDll_HOOK(Secure_, NtDuplicateToken);
+        CobraSboxDll_HOOK(Secure_, NtFilterToken);
         //NtFilterTokenEx is only present in windows 8 later windoses return STATUS_NOT_SUPPORTED
     }
     //if (Dll_Windows < 10) {
-    //    SBIEDLL_HOOK(Secure_, NtQueryInformationToken);
+    //    CobraSboxDll_HOOK(Secure_, NtQueryInformationToken);
     //}
 
     void* RtlEqualSid = (P_RtlEqualSid)GetProcAddress(Dll_Ntdll, "RtlEqualSid");
 
-    SBIEDLL_HOOK(Ldr_, RtlEqualSid);
+    CobraSboxDll_HOOK(Ldr_, RtlEqualSid);
 
     //
     // install hooks to fake administrator privileges
@@ -411,14 +411,14 @@ _FX BOOLEAN Secure_Init(void)
     void* NtQueryInformationToken = GetProcAddress(Dll_Ntdll, "NtQueryInformationToken");
     void* NtAccessCheckByTypeResultList = GetProcAddress(Dll_Ntdll, "NtAccessCheckByTypeResultList");
 
-    SBIEDLL_HOOK(Ldr_, NtQuerySecurityAttributesToken);
-    SBIEDLL_HOOK(Ldr_, NtAccessCheckByType);
-    SBIEDLL_HOOK(Ldr_, NtAccessCheck);
-    SBIEDLL_HOOK(Ldr_, NtAccessCheckByTypeResultList);
-    SBIEDLL_HOOK(Ldr_, NtQueryInformationToken);
+    CobraSboxDll_HOOK(Ldr_, NtQuerySecurityAttributesToken);
+    CobraSboxDll_HOOK(Ldr_, NtAccessCheckByType);
+    CobraSboxDll_HOOK(Ldr_, NtAccessCheck);
+    CobraSboxDll_HOOK(Ldr_, NtAccessCheckByTypeResultList);
+    CobraSboxDll_HOOK(Ldr_, NtQueryInformationToken);
     
     if (Dll_OsBuild >= 9600) { // Windows 8.1 and later
-        SBIEDLL_HOOK(Ldr_, NtOpenThreadToken);
+        CobraSboxDll_HOOK(Ldr_, NtOpenThreadToken);
     }
 
     //
@@ -439,7 +439,7 @@ _FX BOOLEAN Secure_Init(void)
 
     if (RtlQueryElevationFlags) {
 
-        SBIEDLL_HOOK(Secure_,RtlQueryElevationFlags);
+        CobraSboxDll_HOOK(Secure_,RtlQueryElevationFlags);
 
         // $Workaround$ - 3rd party fix
         Secure_ShouldFakeRunningAsAdmin = 
@@ -486,7 +486,7 @@ _FX BOOLEAN Secure_Init(void)
     RtlCheckTokenMembershipEx =
         GetProcAddress(Dll_Ntdll, "RtlCheckTokenMembershipEx");
     if (RtlCheckTokenMembershipEx) {
-        SBIEDLL_HOOK(Secure_, RtlCheckTokenMembershipEx);
+        CobraSboxDll_HOOK(Secure_, RtlCheckTokenMembershipEx);
     }
 
     return TRUE;
@@ -494,22 +494,22 @@ _FX BOOLEAN Secure_Init(void)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_SetFakeAdmin
+// CobraSboxDll_SetFakeAdmin
 //---------------------------------------------------------------------------
 
 
-_FX VOID SbieDll_SetFakeAdmin(BOOLEAN FakeAdmin)
+_FX VOID CobraSboxDll_SetFakeAdmin(BOOLEAN FakeAdmin)
 {
     Secure_FakeAdmin = FakeAdmin;
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_OpenProcess
+// CobraSboxDll_OpenProcess
 //---------------------------------------------------------------------------
 
 
-_FX HANDLE SbieDll_OpenProcess(ACCESS_MASK DesiredAccess, HANDLE idProcess)
+_FX HANDLE CobraSboxDll_OpenProcess(ACCESS_MASK DesiredAccess, HANDLE idProcess)
 {
     HANDLE hProcess = OpenProcess(DesiredAccess, FALSE, (DWORD)(UINT_PTR)idProcess);
     if (! hProcess) {
@@ -2028,7 +2028,7 @@ ALIGNED ULONG_PTR __cdecl Secure_HandleElevation(
 
     Gui_AllowSetForegroundWindow();
 
-    rpl = SbieDll_CallServer(&req.h);
+    rpl = CobraSboxDll_CallServer(&req.h);
 
     if ((! rpl) || (rpl->status != 0))
         SetEvent((HANDLE)pkt->hEvent);
@@ -2073,22 +2073,22 @@ ALIGNED BOOLEAN Secure_RpcAsyncCompleteCall(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_DisableElevationHook
+// CobraSboxDll_DisableElevationHook
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_DisableElevationHook(void)
+_FX void CobraSboxDll_DisableElevationHook(void)
 {
     Secure_Elevation_HookDisabled = TRUE;
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetPublicSecurityDescriptor
+// CobraSboxDll_GetPublicSecurityDescriptor
 //---------------------------------------------------------------------------
 
 
-/*_FX const void *SbieDll_GetPublicSecurityDescriptor(void)
+/*_FX const void *CobraSboxDll_GetPublicSecurityDescriptor(void)
 {
     if (! Secure_EveryoneSD)
         Secure_InitSecurityDescriptors();

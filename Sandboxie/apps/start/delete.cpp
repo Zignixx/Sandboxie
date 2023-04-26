@@ -24,7 +24,7 @@
 #include <shellapi.h>
 #include "common/win32_ntddk.h"
 #include "common/defines.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "msgs/msgs.h"
 #include "common/my_version.h"
 #include "core/svc/SbieIniWire.h"
@@ -116,7 +116,7 @@ INT_PTR StatusDialogProc(
             // set window title
             //
 
-            SetWindowText(hwnd, SbieDll_FormatMessage0(MSG_3315));
+            SetWindowText(hwnd, CobraSboxDll_FormatMessage0(MSG_3315));
 
             //
             // set info text
@@ -146,8 +146,8 @@ INT_PTR StatusDialogProc(
             if (LOWORD(wParam) == IDCANCEL) {
 
                 int rc = MessageBox(hwnd,
-                                    SbieDll_FormatMessage0(MSG_3316),
-                                    SbieDll_FormatMessage0(MSG_3315),
+                                    CobraSboxDll_FormatMessage0(MSG_3316),
+                                    CobraSboxDll_FormatMessage0(MSG_3315),
                                     MB_ICONQUESTION | MB_YESNO |
                                 (layout_rtl ? MB_RTLREADING | MB_RIGHT : 0));
 
@@ -256,7 +256,7 @@ void SetStatusInfo(const WCHAR* info)
 void SetStatusMsg(ULONG msg, const WCHAR* info)
 {
     if(status_wnd) {
-        WCHAR* str = SbieDll_FormatMessage1(msg, info);
+        WCHAR* str = CobraSboxDll_FormatMessage1(msg, info);
         SetDlgItemText(status_wnd, ID_STATUS_INFO, str);
         LocalFree(str);
     }
@@ -278,7 +278,7 @@ void Error(const WCHAR *Descr, NTSTATUS Status)
     if (! g_Silent) {
 
         WCHAR text[512];
-        wcscpy(text, SbieDll_FormatMessage1(MSG_3214, g_BoxName));
+        wcscpy(text, CobraSboxDll_FormatMessage1(MSG_3214, g_BoxName));
         wcscat(text, Descr);
         if (Status) {
             if (Status == STATUS_ACCESS_DENIED ||
@@ -286,7 +286,7 @@ void Error(const WCHAR *Descr, NTSTATUS Status)
             {
                 wcscat(text, L"\n\n");
                 wcscat(text,
-                    SbieDll_FormatMessage0(MSG_3215));
+                    CobraSboxDll_FormatMessage0(MSG_3215));
             }
             SetLastError(RtlNtStatusToDosError(Status));
         }
@@ -314,14 +314,14 @@ void DeleteSandbox(
 
     if (SbieApi_QueryProcess(NULL, NULL, NULL, NULL, NULL) == 0) {
         SetLastError(0);
-        Error(SbieDll_FormatMessage0(MSG_3221), 0);
+        Error(CobraSboxDll_FormatMessage0(MSG_3221), 0);
     }
 
     if ((phase <= 1) &&
             SbieApi_QueryConfBool(g_BoxName, L"NeverDelete", FALSE)) {
 
         SetLastError(0);
-        Error(SbieDll_FormatMessage0(MSG_3051), 0);
+        Error(CobraSboxDll_FormatMessage0(MSG_3051), 0);
 
     } else {
 
@@ -378,7 +378,7 @@ void RenameSandbox(void)
 
     WCHAR *boxpath = GetBoxFilePath(g_BoxName, 128);
     if (! boxpath)
-        Error(SbieDll_FormatMessage0(MSG_3216), 0);
+        Error(CobraSboxDll_FormatMessage0(MSG_3216), 0);
 
     RtlMoveMemory(
         boxpath + 4, boxpath, (wcslen(boxpath) + 1) * sizeof(WCHAR));
@@ -404,7 +404,7 @@ void RenameSandbox(void)
             return;
         }
 
-        Error(SbieDll_FormatMessage0(MSG_3217), status);
+        Error(CobraSboxDll_FormatMessage0(MSG_3217), status);
     }
 
     //
@@ -425,7 +425,7 @@ void RenameSandbox(void)
         NULL, NULL);
 
     if (status != STATUS_SUCCESS)
-        Error(SbieDll_FormatMessage0(MSG_3218), status);
+        Error(CobraSboxDll_FormatMessage0(MSG_3218), status);
 
     // rename sandbox using Nt file operations
 
@@ -456,12 +456,12 @@ void RenameSandbox(void)
             if (pid_count) {
 
                 SetLastError(0);
-                Error(SbieDll_FormatMessage0(MSG_3221), 0);
+                Error(CobraSboxDll_FormatMessage0(MSG_3221), 0);
             }
         }
 
         if (retries == 30)
-            Error(SbieDll_FormatMessage0(MSG_3219), status);
+            Error(CobraSboxDll_FormatMessage0(MSG_3219), status);
 
         ++retries;
         Sleep(200);
@@ -502,7 +502,7 @@ void LaunchProgram(WCHAR *cmdSrc, bool bWait)
 
     if (! ok) {
         WCHAR txt[1024];
-        wcscpy(txt, SbieDll_FormatMessage0(MSG_3222));
+        wcscpy(txt, CobraSboxDll_FormatMessage0(MSG_3222));
         wcscat(txt, cmd);
         Error(txt, 0);
     }
@@ -573,7 +573,7 @@ void DeleteFilesInBox(const WCHAR *boxname)
 
     WCHAR *boxpath = GetBoxFilePath(boxname, 128);
     if (! boxpath) {
-        // Error(SbieDll_FormatMessage0(MSG_3216), 0);
+        // Error(CobraSboxDll_FormatMessage0(MSG_3216), 0);
         return;
     }
     WCHAR *backslash = wcsrchr(boxpath, L'\\');
@@ -1017,7 +1017,7 @@ mainloop:
             bool needRename = ((wcslen(elem->path) + name_len) > 220);
 
             if ((! needRename) && (name_len <= 8)) {
-                if(SbieDll_IsReservedFileName(name))
+                if(CobraSboxDll_IsReservedFileName(name))
                     needRename = true;
             }
 
@@ -1054,7 +1054,7 @@ mainloop:
 
                 bool ok = RenameSingleFile(heap, elem->path, name, BoxPath);
                 if (! ok) {
-                    Error(SbieDll_FormatMessage0(MSG_3220), 0);
+                    Error(CobraSboxDll_FormatMessage0(MSG_3220), 0);
                     return;
                 }
                 anyRenames = true;
@@ -1131,7 +1131,7 @@ ALIGNED WCHAR *GetBoxFilePath(const WCHAR *boxname, ULONG extra)
             boxname, path, NULL, NULL, &len, NULL, NULL);
 
         if (status == 0) {
-            BOOLEAN ok = SbieDll_TranslateNtToDosPath(path);
+            BOOLEAN ok = CobraSboxDll_TranslateNtToDosPath(path);
             if (! ok)
                 status = 1;
         }

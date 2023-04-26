@@ -371,7 +371,7 @@ The certificate is valid and has been successfully applied.
 1109;evt;err;01
 SBIE1109 1202;pop;err;01
 SBIE1202 1214;pop;err;01
-SBIE1214 SbieDll 1215;pop;err;01
+SBIE1214 CobraSboxDll 1215;pop;err;01
 SBIE1215 1216;pop;err;01
 SBIE1216 1222;pop;err;01
 SBIE1222 1223;pop;err;01

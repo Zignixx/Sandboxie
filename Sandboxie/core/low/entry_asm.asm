@@ -333,9 +333,9 @@ RtlFindActCtx			dq	?				; 0x20
 RtlFindActCtx_Protect	dd	?				; 0x28
 RtlFindActCtx_Bytes 	db	20 dup (?)		; 0x2C
 KernelDll_Unicode		dq	2 dup (?)		; 0x40
-SbieDll_Unicode			dq	2 dup (?)		; 0x50
+CobraSboxDll_Unicode			dq	2 dup (?)		; 0x50
 ModuleHandle			dq	?				; 0x60
-SbieDllOrdinal1			dq	?				; 0x68
+CobraSboxDllOrdinal1			dq	?				; 0x68
 InjectData		ends
 
 
@@ -378,12 +378,12 @@ LdrLoadDll_Retry:
 		jmp	RtlFindActivationContextSectionStringError
 LdrLoadDll_Good:
 		;
-		; call LdrLoadDll for sbiedll
+		; call LdrLoadDll for CobraSboxDll
 		;
 
 		lea	eax, [esi].InjectData.ModuleHandle
 		push	eax
-		lea	eax, [esi].InjectData.SbieDll_Unicode
+		lea	eax, [esi].InjectData.CobraSboxDll_Unicode
 		push	eax
 		push	0
 		push	0
@@ -393,11 +393,11 @@ LdrLoadDll_Good:
 		jnz	RtlFindActivationContextSectionStringError
 
 		;
-		; call LdrGetProcedureAddress for sbiedll ordinal 1,
-		; which forces ntdll to initialize sbiedll
+		; call LdrGetProcedureAddress for CobraSboxDll ordinal 1,
+		; which forces ntdll to initialize CobraSboxDll
 		;
 		
-		lea	eax, [esi].InjectData.SbieDllOrdinal1
+		lea	eax, [esi].InjectData.CobraSboxDllOrdinal1
 		push	eax
 		push	1
 		push	0
@@ -423,7 +423,7 @@ LdrLoadDll_Good:
 		mov	dword ptr [esi].InjectData.LdrLoadDll, eax
 		mov	eax, esi
 		pop	esi
-		jmp	dword ptr [eax].InjectData.SbieDllOrdinal1
+		jmp	dword ptr [eax].InjectData.CobraSboxDllOrdinal1
 		
 		;
 		; display error message, invoke NtRaiseHardError(
@@ -442,7 +442,7 @@ RtlFindActivationContextSectionStringError:
 		
     	push	eax		; save ntstatus
     		
-    	lea	edx, [esi].InjectData.SbieDll_Unicode
+    	lea	edx, [esi].InjectData.CobraSboxDll_Unicode
     	mov	dword ptr [esi].InjectData.LdrLoadDll, edx
 		
     	lea	edx, [esi].InjectData.LdrGetProcAddr
@@ -516,12 +516,12 @@ LdrLoadGood:
 		mov rbx, qword ptr [rsi].InjectData.RtlFindActCtx_Bytes
 
 		;
-		; call LdrLoadDll for sbiedll
+		; call LdrLoadDll for CobraSboxDll
 		;
 
 		xor	rcx, rcx
 		xor	rdx, rdx
-		lea	r8, [rsi].InjectData.SbieDll_Unicode
+		lea	r8, [rsi].InjectData.CobraSboxDll_Unicode
 		lea	r9, [rsi].InjectData.ModuleHandle
 		call	qword ptr [rsi].InjectData.LdrLoadDll
 
@@ -529,15 +529,15 @@ LdrLoadGood:
 		jnz	RtlFindActivationContextSectionStringError
 		
 		;
-		; call LdrGetProcedureAddress for sbiedll ordinal 1,
-		; which forces ntdll to initialize sbiedll
+		; call LdrGetProcedureAddress for CobraSboxDll ordinal 1,
+		; which forces ntdll to initialize CobraSboxDll
 		;
 		
 		mov	rcx, qword ptr [rsi].InjectData.ModuleHandle
 		xor	rdx, rdx
 		xor	r8, r8
 		inc	r8
-		lea	r9, [rsi].InjectData.SbieDllOrdinal1
+		lea	r9, [rsi].InjectData.CobraSboxDllOrdinal1
 		call	qword ptr [rsi].InjectData.LdrGetProcAddr
 
 		test	eax, eax
@@ -563,7 +563,7 @@ LdrLoadGood:
 		
 		add	rsp, 8*8
 		pop	rsi
-		jmp	qword ptr [rcx].InjectData.SbieDllOrdinal1
+		jmp	qword ptr [rcx].InjectData.CobraSboxDllOrdinal1
 
 		;
 		; display error message, invoke NtRaiseHardError(
@@ -592,7 +592,7 @@ RtlFindActivationContextSectionStringError:
 
     		lea	r9, \		; list_of_pointers_to_parameters
     			[esi].InjectData.LdrLoadDll
-    		lea	rax, [rsi].InjectData.SbieDll_Unicode
+    		lea	rax, [rsi].InjectData.CobraSboxDll_Unicode
 		mov	qword ptr [r9], rax
 		
 		mov	\		; response_buttons - ERROR_OK

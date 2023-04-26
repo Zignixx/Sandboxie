@@ -421,11 +421,11 @@ _FX BOOLEAN Ldr_Init()
 
 
     if (Dll_OsBuild >= 6000) { // Windows Vista and later
-        SbieDll_RegisterDllCallback(Ldr_MyDllCallbackA);
+        CobraSboxDll_RegisterDllCallback(Ldr_MyDllCallbackA);
         __my_Ldr_CallOneDllCallback = Ldr_CallOneDllCallback;
     }
     else { // Windows XP
-        SbieDll_RegisterDllCallback(Ldr_MyDllCallbackW);
+        CobraSboxDll_RegisterDllCallback(Ldr_MyDllCallbackW);
         __my_Ldr_CallOneDllCallback = Ldr_CallOneDllCallbackXP;
     }
 
@@ -445,8 +445,8 @@ _FX BOOLEAN Ldr_Init()
         /* needed for future update */
         //void *LdrRegisterDllNotification = (P_LdrRegisterDllNotification)GetProcAddress(Dll_Ntdll,"LdrRegisterDllNotification");
         //void *LdrUnregisterDllNotification = (P_LdrUnregisterDllNotification)GetProcAddress(Dll_Ntdll,"LdrUnregisterDllNotification");
-        //SBIEDLL_HOOK(Ldr_,LdrRegisterDllNotification);
-        //SBIEDLL_HOOK(Ldr_,LdrUnregisterDllNotification);
+        //CobraSboxDll_HOOK(Ldr_,LdrRegisterDllNotification);
+        //CobraSboxDll_HOOK(Ldr_,LdrUnregisterDllNotification);
         if (__sys_LdrRegisterDllNotification) {
             rc = __sys_LdrRegisterDllNotification(0, ((void *)Ldr_LdrDllNotification), NULL, &LdrLoaderCookie);
         }
@@ -454,13 +454,13 @@ _FX BOOLEAN Ldr_Init()
             return FALSE;
         }
 
-        SBIEDLL_HOOK(Ldr_, NtTerminateProcess);
-        SBIEDLL_HOOK(Ldr_Win10_, LdrLoadDll);
+        CobraSboxDll_HOOK(Ldr_, NtTerminateProcess);
+        CobraSboxDll_HOOK(Ldr_Win10_, LdrLoadDll);
     }
     else { // Windows 8 and before
-        SBIEDLL_HOOK(Ldr_, LdrLoadDll);
-        SBIEDLL_HOOK(Ldr_, LdrUnloadDll);
-        SBIEDLL_HOOK(Ldr_, LdrQueryImageFileExecutionOptions);
+        CobraSboxDll_HOOK(Ldr_, LdrLoadDll);
+        CobraSboxDll_HOOK(Ldr_, LdrUnloadDll);
+        CobraSboxDll_HOOK(Ldr_, LdrQueryImageFileExecutionOptions);
 
         if (Dll_OsBuild >= 8400) {
 
@@ -472,11 +472,11 @@ _FX BOOLEAN Ldr_Init()
                 (P_NtApphelpCacheControl)GetProcAddress(
                     Dll_Ntdll, "NtApphelpCacheControl");
 
-            SBIEDLL_HOOK(Ldr_, LdrResolveDelayLoadedAPI);
-            SBIEDLL_HOOK(Ldr_, NtApphelpCacheControl);
+            CobraSboxDll_HOOK(Ldr_, LdrResolveDelayLoadedAPI);
+            CobraSboxDll_HOOK(Ldr_, NtApphelpCacheControl);
         }
     }
-    SBIEDLL_HOOK(Ldr_, NtLoadDriver);
+    CobraSboxDll_HOOK(Ldr_, NtLoadDriver);
 
 
     //
@@ -531,10 +531,10 @@ _FX BOOLEAN Ldr_Init()
 }
 
 //---------------------------------------------------------------------------
-// SbieDll_RegisterDllCallback
+// CobraSboxDll_RegisterDllCallback
 //---------------------------------------------------------------------------
 
-_FX BOOLEAN SbieDll_RegisterDllCallback(void *Callback)
+_FX BOOLEAN CobraSboxDll_RegisterDllCallback(void *Callback)
 {
     NTSTATUS status = 0;
     ULONG_PTR LdrCookie;
@@ -897,7 +897,7 @@ _FX NTSTATUS Ldr_LdrUnloadDll(HANDLE ModuleHandle)
     DWORD tid;
 
     //
-    // prevent unloading of SbieDll
+    // prevent unloading of CobraSboxDll
     //
 
     tid = GetCurrentThreadId();
@@ -1107,7 +1107,7 @@ _FX void Ldr_MyDllCallbackW(const WCHAR *ImageName, HMODULE ImageBase, BOOL Load
                 if (!ok)
                     SbieApi_Log(2318, dll->nameW);
             } else {
-                SbieDll_UnHookModule(ImageBase);
+                CobraSboxDll_UnHookModule(ImageBase);
             }
             break;
         }
@@ -1142,7 +1142,7 @@ _FX void Ldr_MyDllCallbackNew(const WCHAR *ImageName, HMODULE ImageBase, BOOL Lo
             }
             else {
                 if (dll->state) {
-                    SbieDll_UnHookModule(ImageBase);
+                    CobraSboxDll_UnHookModule(ImageBase);
                     EnterCriticalSection(&Ldr_LoadedModules_CritSec);
                     dll->state = 0;
                     LeaveCriticalSection(&Ldr_LoadedModules_CritSec);
@@ -1419,11 +1419,11 @@ _FX void Ldr_LoadSkipList()
 
 
 //---------------------------------------------------------------------------
-// SbieDll_IsDllSkipHook
+// CobraSboxDll_IsDllSkipHook
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_IsDllSkipHook(const WCHAR* ImageName)
+_FX BOOLEAN CobraSboxDll_IsDllSkipHook(const WCHAR* ImageName)
 {
     DLL *dll = Ldr_Dlls;
     while (dll->nameW) {

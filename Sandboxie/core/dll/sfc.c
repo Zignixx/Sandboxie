@@ -74,13 +74,13 @@ _FX BOOLEAN Sfc_Init(HMODULE module)
         GetProcAddress(module, "SfcGetNextProtectedFile");
 
     if (SfcIsFileProtected) {
-        SBIEDLL_HOOK(Sfc_,SfcIsFileProtected);
+        CobraSboxDll_HOOK(Sfc_,SfcIsFileProtected);
     }
     if (SfcIsKeyProtected) {
-        SBIEDLL_HOOK(Sfc_,SfcIsKeyProtected);
+        CobraSboxDll_HOOK(Sfc_,SfcIsKeyProtected);
     }
     if (SfcGetNextProtectedFile) {
-        SBIEDLL_HOOK(Sfc_,SfcGetNextProtectedFile);
+        CobraSboxDll_HOOK(Sfc_,SfcGetNextProtectedFile);
     }
 
     return TRUE;

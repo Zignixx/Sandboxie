@@ -128,7 +128,7 @@ _FX BOOLEAN SysInfo_Init(void)
 
     if (! Dll_SkipHook(L"ntqsi")) {
 
-        SBIEDLL_HOOK(SysInfo_,NtQuerySystemInformation);
+        CobraSboxDll_HOOK(SysInfo_,NtQuerySystemInformation);
     }
 
     extern BOOLEAN Gui_OpenAllWinClasses;
@@ -137,20 +137,20 @@ _FX BOOLEAN SysInfo_Init(void)
     if (Dll_OsBuild >= 8400)
         SysInfo_CanUseJobs = SbieApi_QueryConfBool(NULL, L"AllowBoxedJobs", FALSE);
 
-    SBIEDLL_HOOK(SysInfo_, NtCreateJobObject);
-    SBIEDLL_HOOK(SysInfo_, NtOpenJobObject);
+    CobraSboxDll_HOOK(SysInfo_, NtCreateJobObject);
+    CobraSboxDll_HOOK(SysInfo_, NtOpenJobObject);
     if (SysInfo_UseSbieJob) {
         if (!SysInfo_CanUseJobs) {
-            SBIEDLL_HOOK(SysInfo_, NtAssignProcessToJobObject);
+            CobraSboxDll_HOOK(SysInfo_, NtAssignProcessToJobObject);
         }
-        SBIEDLL_HOOK(SysInfo_, NtSetInformationJobObject);
+        CobraSboxDll_HOOK(SysInfo_, NtSetInformationJobObject);
     }
 
     {
         HMODULE module = Dll_Kernel32;
 
-        SBIEDLL_HOOK(SysInfo_, SetLocaleInfoW);
-        SBIEDLL_HOOK(SysInfo_, SetLocaleInfoA);
+        CobraSboxDll_HOOK(SysInfo_, SetLocaleInfoW);
+        CobraSboxDll_HOOK(SysInfo_, SetLocaleInfoA);
     }
 
     //
@@ -161,7 +161,7 @@ _FX BOOLEAN SysInfo_Init(void)
     NtTraceEvent = GetProcAddress(Dll_Ntdll, "NtTraceEvent");
     if (NtTraceEvent) {
 
-        SBIEDLL_HOOK(SysInfo_, NtTraceEvent);
+        CobraSboxDll_HOOK(SysInfo_, NtTraceEvent);
     }
 
     if (Dll_OsBuild >= 8400) {
@@ -175,7 +175,7 @@ _FX BOOLEAN SysInfo_Init(void)
         if (NtDeleteWnfStateData) {
 
             P_NtDeleteWnfStateData __sys_NtDeleteWnfStateData = NULL;
-            SBIEDLL_HOOK(SysInfo_,NtDeleteWnfStateData);
+            CobraSboxDll_HOOK(SysInfo_,NtDeleteWnfStateData);
         }
     }
 

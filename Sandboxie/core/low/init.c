@@ -568,13 +568,13 @@ _FX void DisableCHPE(SBIELOW_DATA* data)
     // Sandboxie on ARM64 requires x86 applications NOT to use the CHPE (Compiled Hybrid Portable Executable)
     // binaries as when hooking a hybrid binary it is required to hook the internal native functions.
     // 
-    // This can be done quite easily for ARM64EC (x64 on ARM64) by compiling SbieDll.dll as ARM64EC
-    // and resolving the FFS sequence targets, which then can be hooked with the native SbieDll.dll functions.
+    // This can be done quite easily for ARM64EC (x64 on ARM64) by compiling CobraSboxDll.dll as ARM64EC
+    // and resolving the FFS sequence targets, which then can be hooked with the native CobraSboxDll.dll functions.
     // 
     // For CHPE MSFT how ever does not provide any public build tool chain, hence it would be required
     // to hand craft native detour targets and then properly transition to x86 code which is not documented.
     // When the use of hybrid binaries for x86 is disabled all loaded DLL's, except the native ntdll.dll
-    // are pure x86 binaries and can be easily hooked with SbieDll.dll's x86 functions.
+    // are pure x86 binaries and can be easily hooked with CobraSboxDll.dll's x86 functions.
     // 
     // To prevent the kernel from loading the CHPE version of ntdll.dll we can pass PsAttributeChpe = 0
     // in the AttributeList of NtCreateUserProcess, however then the created process will still try to 
@@ -584,7 +584,7 @@ _FX void DisableCHPE(SBIELOW_DATA* data)
     // the regular x86 binaries from the SysWOW64 directory and initialize properly.
     // 
     // Note: This hook affects only the native function and is only installed on x86 processes
-    //          hence we install a similar hook in SbieDll.dll!Proc_Init which causes 
+    //          hence we install a similar hook in CobraSboxDll.dll!Proc_Init which causes 
     //          CreateProcessInternalW to set PsAttributeChpe = 0 when creating new processes.
     //
 

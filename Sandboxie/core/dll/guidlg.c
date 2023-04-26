@@ -132,17 +132,17 @@ _FX BOOLEAN Gui_InitDlgTmpl(HMODULE module)
     if (! Gui_RenameClasses)
         return TRUE;
 
-    SBIEDLL_HOOK_GUI(CreateDialogParamA);
-    SBIEDLL_HOOK_GUI(CreateDialogParamW);
-    SBIEDLL_HOOK_GUI(CreateDialogIndirectParamA);
-    SBIEDLL_HOOK_GUI(CreateDialogIndirectParamW);
-    SBIEDLL_HOOK_GUI(CreateDialogIndirectParamAorW);
+    CobraSboxDll_HOOK_GUI(CreateDialogParamA);
+    CobraSboxDll_HOOK_GUI(CreateDialogParamW);
+    CobraSboxDll_HOOK_GUI(CreateDialogIndirectParamA);
+    CobraSboxDll_HOOK_GUI(CreateDialogIndirectParamW);
+    CobraSboxDll_HOOK_GUI(CreateDialogIndirectParamAorW);
 
-    SBIEDLL_HOOK_GUI(DialogBoxParamA);
-    SBIEDLL_HOOK_GUI(DialogBoxParamW);
-    SBIEDLL_HOOK_GUI(DialogBoxIndirectParamA);
-    SBIEDLL_HOOK_GUI(DialogBoxIndirectParamW);
-    SBIEDLL_HOOK_GUI(DialogBoxIndirectParamAorW);
+    CobraSboxDll_HOOK_GUI(DialogBoxParamA);
+    CobraSboxDll_HOOK_GUI(DialogBoxParamW);
+    CobraSboxDll_HOOK_GUI(DialogBoxIndirectParamA);
+    CobraSboxDll_HOOK_GUI(DialogBoxIndirectParamW);
+    CobraSboxDll_HOOK_GUI(DialogBoxIndirectParamAorW);
 
     return TRUE;
 }

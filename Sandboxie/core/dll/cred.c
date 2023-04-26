@@ -150,15 +150,15 @@ static const WCHAR *Cred_DomainCred = L"DomainCred-";
 //static BOOLEAN Cred_Trace = FALSE;
 
 //---------------------------------------------------------------------------
-// SBIEDLL_HOOK_CRED
+// CobraSboxDll_HOOK_CRED
 //---------------------------------------------------------------------------
 
 
-#define SBIEDLL_HOOK_CRED(proc)                                             \
+#define CobraSboxDll_HOOK_CRED(proc)                                             \
     *(ULONG_PTR *)&__sys_##proc = (ULONG_PTR)Ldr_GetProcAddrNew(DllName_advapi32, L#proc, #proc); \
     if (*(ULONG_PTR *)&__sys_##proc) {                                      \
         *(ULONG_PTR *)&__sys_##proc = (ULONG_PTR)                           \
-            SbieDll_Hook(#proc, __sys_##proc, Cred_##proc, module);         \
+            CobraSboxDll_Hook(#proc, __sys_##proc, Cred_##proc, module);         \
         if (! __sys_##proc) return FALSE;                                   \
     }
 
@@ -175,7 +175,7 @@ _FX BOOLEAN Cred_Init_AdvApi(HMODULE module)
     // don't hook anything
     //
 
-    ULONG mp_flags = SbieDll_MatchPath(L'i', L"\\RPC Control\\protected_storage");
+    ULONG mp_flags = CobraSboxDll_MatchPath(L'i', L"\\RPC Control\\protected_storage");
     if (PATH_IS_OPEN(mp_flags))
         return TRUE;
 
@@ -191,29 +191,29 @@ _FX BOOLEAN Cred_Init_AdvApi(HMODULE module)
     // otherwise hook Cred APIs
     //
 
-    SBIEDLL_HOOK_CRED(CredWriteA);
-    SBIEDLL_HOOK_CRED(CredWriteW);
+    CobraSboxDll_HOOK_CRED(CredWriteA);
+    CobraSboxDll_HOOK_CRED(CredWriteW);
 
-    SBIEDLL_HOOK_CRED(CredReadA);
-    SBIEDLL_HOOK_CRED(CredReadW);
+    CobraSboxDll_HOOK_CRED(CredReadA);
+    CobraSboxDll_HOOK_CRED(CredReadW);
 
-    SBIEDLL_HOOK_CRED(CredWriteDomainCredentialsA);
-    SBIEDLL_HOOK_CRED(CredWriteDomainCredentialsW);
+    CobraSboxDll_HOOK_CRED(CredWriteDomainCredentialsA);
+    CobraSboxDll_HOOK_CRED(CredWriteDomainCredentialsW);
 
-    SBIEDLL_HOOK_CRED(CredReadDomainCredentialsA);
-    SBIEDLL_HOOK_CRED(CredReadDomainCredentialsW);
+    CobraSboxDll_HOOK_CRED(CredReadDomainCredentialsA);
+    CobraSboxDll_HOOK_CRED(CredReadDomainCredentialsW);
 
-    //SBIEDLL_HOOK_CRED(CredGetTargetInfoA);
-    //SBIEDLL_HOOK_CRED(CredGetTargetInfoW);
+    //CobraSboxDll_HOOK_CRED(CredGetTargetInfoA);
+    //CobraSboxDll_HOOK_CRED(CredGetTargetInfoW);
 
-    SBIEDLL_HOOK_CRED(CredRenameA);
-    SBIEDLL_HOOK_CRED(CredRenameW);
+    CobraSboxDll_HOOK_CRED(CredRenameA);
+    CobraSboxDll_HOOK_CRED(CredRenameW);
 
-    SBIEDLL_HOOK_CRED(CredDeleteA);
-    SBIEDLL_HOOK_CRED(CredDeleteW);
+    CobraSboxDll_HOOK_CRED(CredDeleteA);
+    CobraSboxDll_HOOK_CRED(CredDeleteW);
 
-    SBIEDLL_HOOK_CRED(CredEnumerateA);
-    SBIEDLL_HOOK_CRED(CredEnumerateW);
+    CobraSboxDll_HOOK_CRED(CredEnumerateA);
+    CobraSboxDll_HOOK_CRED(CredEnumerateW);
 
     return TRUE;
 }
@@ -239,7 +239,7 @@ _FX BOOLEAN Cred_PreparePStore(void)
 
         if (Cred_CoTaskMemFree) {
 
-            Cred_PStore = SbieDll_InitPStore();
+            Cred_PStore = CobraSboxDll_InitPStore();
             if (Cred_PStore)
                 return TRUE;
         }

@@ -377,7 +377,7 @@ SBIE1202 Não é possível atualizar a informação de licença:  %2
 .
 
 1214;pop;err;01
-SBIE1214 Não é possível injetar SbieDll %2
+SBIE1214 Não é possível injetar CobraSboxDll %2
 .
 
 1215;pop;err;01

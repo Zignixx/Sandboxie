@@ -149,7 +149,7 @@ QString CTraceEntry::GetTypeStr() const
 		Type.append(" / " + m_SubType);
 
 	if (m_Type.User)
-		Type.append(" (U)"); // user mode (sbiedll.dll)
+		Type.append(" (U)"); // user mode (CobraSboxDll.dll)
 	//else if (m_Type.Agent)
 	//	Type.append(" (S)"); // system mode (sbiesvc.exe)
 	else

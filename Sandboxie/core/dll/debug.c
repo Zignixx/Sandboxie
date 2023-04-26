@@ -35,7 +35,7 @@
 _FX void Debug_Wait()
 {
     BOOL Found = SbieApi_QueryConfBool(NULL, L"WaitForDebuggerAll", FALSE) ||
-        SbieDll_CheckStringInList(Dll_ImageName, NULL, L"WaitForDebugger");
+        CobraSboxDll_CheckStringInList(Dll_ImageName, NULL, L"WaitForDebugger");
 
     const WCHAR *CmdLine = GetCommandLine();
     WCHAR buf[66];
@@ -81,7 +81,7 @@ _FX void Debug_Wait()
 //#define BREAK_PROC      "InstallDriverPackages"
 //#define BREAK_PROC        "MSIunzipcore"
 
-#undef  HIDE_SBIEDLL
+#undef  HIDE_CobraSboxDll
 
 
 //---------------------------------------------------------------------------
@@ -111,7 +111,7 @@ static BOOL Debug_WaitForDebugEvent(
 static ULONG_PTR Debug_GetProcAddress(HMODULE hModule, const UCHAR *ProcName);
 #endif
 
-#ifdef HIDE_SBIEDLL
+#ifdef HIDE_CobraSboxDll
 static NTSTATUS Debug_LdrGetDllHandle(
     WCHAR *DllPath, ULONG *DllCharacteristics,
     UNICODE_STRING *DllName, ULONG_PTR *DllHandle);
@@ -151,7 +151,7 @@ typedef ULONG_PTR (*P_GetProcAddress)(HMODULE hModule, const UCHAR *ProcName);
 static P_GetProcAddress __sys_GetProcAddress            = NULL;
 #endif
 
-#ifdef HIDE_SBIEDLL
+#ifdef HIDE_CobraSboxDll
 typedef NTSTATUS (*P_LdrGetDllHandle)(
     WCHAR *DllPath, ULONG *DllCharacteristics,
     UNICODE_STRING *DllName, ULONG_PTR *DllHandle);
@@ -185,13 +185,13 @@ _FX int Debug_Init(void)
     NtRaiseHardError = (P_NtRaiseHardError)
         GetProcAddress(Dll_Ntdll, "NtRaiseHardError");
 
-    //SBIEDLL_HOOK(Debug_,NtRaiseHardError);
+    //CobraSboxDll_HOOK(Debug_,NtRaiseHardError);
 
 
     RtlSetLastWin32Error = (P_RtlSetLastWin32Error)
         GetProcAddress(Dll_Ntdll, "RtlSetLastWin32Error");
 
-    //SBIEDLL_HOOK(Debug_,RtlSetLastWin32Error);
+    //CobraSboxDll_HOOK(Debug_,RtlSetLastWin32Error);
 
     //
     // intercept KERNEL32 entry points
@@ -206,8 +206,8 @@ _FX int Debug_Init(void)
 
     /*if (_wcsicmp(Dll_ImageName, L"msiexec.exe") == 0) {
 
-        SBIEDLL_HOOK(Debug_,OutputDebugStringW);
-        SBIEDLL_HOOK(Debug_,OutputDebugStringA);
+        CobraSboxDll_HOOK(Debug_,OutputDebugStringW);
+        CobraSboxDll_HOOK(Debug_,OutputDebugStringA);
     }*/
 
     DebugActiveProcess = (P_DebugActiveProcess)
@@ -216,15 +216,15 @@ _FX int Debug_Init(void)
     WaitForDebugEvent = (P_WaitForDebugEvent)
         GetProcAddress(Dll_Kernel32, "WaitForDebugEvent");
 
-    //SBIEDLL_HOOK(Debug_,DebugActiveProcess);
-    //SBIEDLL_HOOK(Debug_,WaitForDebugEvent);
+    //CobraSboxDll_HOOK(Debug_,DebugActiveProcess);
+    //CobraSboxDll_HOOK(Debug_,WaitForDebugEvent);
 
 #ifdef BREAK_PROC
-    SBIEDLL_HOOK(Debug_,GetProcAddress);
+    CobraSboxDll_HOOK(Debug_,GetProcAddress);
 #endif
 
-#ifdef HIDE_SBIEDLL
-    SBIEDLL_HOOK(Debug_,LdrGetDllHandle);
+#ifdef HIDE_CobraSboxDll
+    CobraSboxDll_HOOK(Debug_,LdrGetDllHandle);
 #endif
 
     //
@@ -455,7 +455,7 @@ ALIGNED ULONG_PTR Debug_GetProcAddress(HMODULE hModule, const UCHAR *ProcName)
 //---------------------------------------------------------------------------
 
 
-#ifdef HIDE_SBIEDLL
+#ifdef HIDE_CobraSboxDll
 _FX NTSTATUS Debug_LdrGetDllHandle(
     WCHAR *DllPath, ULONG *DllCharacteristics,
     UNICODE_STRING *DllName, ULONG_PTR *DllHandle)

@@ -108,9 +108,9 @@ _FX BOOLEAN Gui_InitWinHooks(HMODULE module)
     InitializeCriticalSection(&Gui_HooksCritSec);
     List_Init(&Gui_Hooks);
 
-    SBIEDLL_HOOK_GUI(SetWindowsHookExA);
-    SBIEDLL_HOOK_GUI(SetWindowsHookExW);
-    SBIEDLL_HOOK_GUI(UnhookWindowsHookEx);
+    CobraSboxDll_HOOK_GUI(SetWindowsHookExA);
+    CobraSboxDll_HOOK_GUI(SetWindowsHookExW);
+    CobraSboxDll_HOOK_GUI(UnhookWindowsHookEx);
 
     Gui_HookInit = TRUE;
 

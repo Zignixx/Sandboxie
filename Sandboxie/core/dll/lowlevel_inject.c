@@ -82,21 +82,21 @@ typedef PVOID (*P_VirtualAlloc2)(
 // Functions
 //---------------------------------------------------------------------------
 
-SBIEDLL_EXPORT  HANDLE SbieDll_InjectLow_SendHandle(HANDLE hProcess);
+CobraSboxDll_EXPORT  HANDLE CobraSboxDll_InjectLow_SendHandle(HANDLE hProcess);
 
-void *SbieDll_InjectLow_CopyCode(
+void *CobraSboxDll_InjectLow_CopyCode(
 	HANDLE hProcess, SIZE_T lowLevel_size, UCHAR *code, ULONG code_len
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
 );
-BOOLEAN SbieDll_InjectLow_BuildTramp(
+BOOLEAN CobraSboxDll_InjectLow_BuildTramp(
 	BOOLEAN long_diff, UCHAR *code, ULONG_PTR addr
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
 );
-void *SbieDll_InjectLow_CopySyscalls(HANDLE hProcess, BOOLEAN is_wow64
+void *CobraSboxDll_InjectLow_CopySyscalls(HANDLE hProcess, BOOLEAN is_wow64
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
@@ -106,13 +106,13 @@ void* InjectLow_AllocMemory(HANDLE hProcess, SIZE_T size, BOOLEAN executable
 	, BOOLEAN use_arm64ec
 #endif
 );
-BOOLEAN SbieDll_InjectLow_CopyData(
+BOOLEAN CobraSboxDll_InjectLow_CopyData(
 	HANDLE hProcess, void *remote_addr, void *local_data);
 #ifdef _WIN64
-BOOLEAN SbieDll_Has32BitJumpHorizon(void * target, void * detour);
-void * SbieDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr);
+BOOLEAN CobraSboxDll_Has32BitJumpHorizon(void * target, void * detour);
+void * CobraSboxDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr);
 #endif
-BOOLEAN SbieDll_InjectLow_WriteJump(
+BOOLEAN CobraSboxDll_InjectLow_WriteJump(
 	HANDLE hProcess, void *remote_addr, BOOLEAN long_diff
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
@@ -156,7 +156,7 @@ P_VirtualAlloc2 __sys_VirtualAlloc2 = NULL;
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_InjectLow_InitHelper()
+_FX ULONG CobraSboxDll_InjectLow_InitHelper()
 {
     //
     // lock the SbieLow resource (embedded within the SbieSvc executable,
@@ -265,7 +265,7 @@ _FX ULONG SbieDll_InjectLow_InitHelper()
 
 	//
 	// for x64 on arm64 we need the EC version of LdrInitializeThunk as well as VirtualAlloc2, 
-	// if those are missing we will only fail SbieDll_InjectLow for x64 processes on arm64
+	// if those are missing we will only fail CobraSboxDll_InjectLow for x64 processes on arm64
 	//
 
 	WCHAR path[MAX_PATH];
@@ -293,11 +293,11 @@ _FX ULONG SbieDll_InjectLow_InitHelper()
 #if defined(_M_ARM64) || defined(_M_ARM64EC)
 
 //---------------------------------------------------------------------------
-// SbieDll_FindFirstSysCallFunc
+// CobraSboxDll_FindFirstSysCallFunc
 //---------------------------------------------------------------------------
 
 
-_FX ULONG* SbieDll_FindFirstSysCallFunc(ULONG* aCode, void** pHandleStubHijack)
+_FX ULONG* CobraSboxDll_FindFirstSysCallFunc(ULONG* aCode, void** pHandleStubHijack)
 {
 	//
 	// Scan the ntdll.dll/win32u.dll from its base up to 16mb max 
@@ -316,11 +316,11 @@ _FX ULONG* SbieDll_FindFirstSysCallFunc(ULONG* aCode, void** pHandleStubHijack)
 }
 
 //---------------------------------------------------------------------------
-// SbieDll_GetEcExitThunkPtr
+// CobraSboxDll_GetEcExitThunkPtr
 //---------------------------------------------------------------------------
 
 
-_FX void* SbieDll_GetEcExitThunkPtr(void* HandleStubHijack)
+_FX void* CobraSboxDll_GetEcExitThunkPtr(void* HandleStubHijack)
 {
     UCHAR* ptr = (UCHAR*)HandleStubHijack;
 
@@ -357,11 +357,11 @@ _FX void* SbieDll_GetEcExitThunkPtr(void* HandleStubHijack)
 #endif
 
 //---------------------------------------------------------------------------
-// SbieDll_GetSysCallOffset
+// CobraSboxDll_GetSysCallOffset
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index)
+_FX ULONG CobraSboxDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index)
 {
     ULONG SyscallNum;
 
@@ -386,9 +386,9 @@ _FX ULONG SbieDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index)
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
+_FX ULONG CobraSboxDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 {
-	const WCHAR *_SbieDll = L"\\" SBIEDLL L".dll";
+	const WCHAR *_CobraSboxDll = L"\\" CobraSboxDll L".dll";
 	WCHAR sbie_home[512];
 	ULONG status;
 	ULONG len;
@@ -400,7 +400,7 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 #endif
 
 	//
-	// Get the SbieDll Location
+	// Get the CobraSboxDll Location
 	//
 
 	if (drv_init)
@@ -492,9 +492,9 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 
 		wchar_t KernelDll_str[13]		= L"kernel32.dll";
 
-		wchar_t NativeSbieDll_str[]		= L"...\\SbieDll.dll";
-		wchar_t Arm64ecSbieDll_str[]	= L"...\\64\\SbieDll.dll";
-		wchar_t Wow64SbieDll_str[]		= L"...\\32\\SbieDll.dll";
+		wchar_t NativeCobraSboxDll_str[]		= L"...\\CobraSboxDll.dll";
+		wchar_t Arm64ecCobraSboxDll_str[]	= L"...\\64\\CobraSboxDll.dll";
+		wchar_t Wow64CobraSboxDll_str[]		= L"...\\32\\CobraSboxDll.dll";
 
 		struct INJECT_DATA {
 			// ...
@@ -574,36 +574,36 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 	ptr += len + 1;
 
 	//
-	// append paths for native and wow64 SbieDll to the syscall buffer
+	// append paths for native and wow64 CobraSboxDll to the syscall buffer
 	//
 
 	wcscpy(ptr, sbie_home);
-	wcscat(ptr, _SbieDll);
+	wcscat(ptr, _CobraSboxDll);
 
 	len = (ULONG)wcslen(ptr);
-	extra->NativeSbieDll_offset = ULONG_DIFF(ptr, extra);
-	extra->NativeSbieDll_length = len * sizeof(WCHAR);
+	extra->NativeCobraSboxDll_offset = ULONG_DIFF(ptr, extra);
+	extra->NativeCobraSboxDll_length = len * sizeof(WCHAR);
 	ptr += len + 1;
 
 #ifdef _M_ARM64
 	wcscpy(ptr, sbie_home);
 	wcscat(ptr, L"\\64");
-	wcscat(ptr, _SbieDll);
+	wcscat(ptr, _CobraSboxDll);
 
 	len = (ULONG)wcslen(ptr);
-	extra->Arm64ecSbieDll_offset = ULONG_DIFF(ptr, extra);
-	extra->Arm64ecSbieDll_length = len * sizeof(WCHAR);
+	extra->Arm64ecCobraSboxDll_offset = ULONG_DIFF(ptr, extra);
+	extra->Arm64ecCobraSboxDll_length = len * sizeof(WCHAR);
 	ptr += len + 1;
 #endif
 
 #ifdef _WIN64
 	wcscpy(ptr, sbie_home);
 	wcscat(ptr, L"\\32");
-	wcscat(ptr, _SbieDll);
+	wcscat(ptr, _CobraSboxDll);
 
 	len = (ULONG)wcslen(ptr);
-	extra->Wow64SbieDll_offset = ULONG_DIFF(ptr, extra);
-	extra->Wow64SbieDll_length = len * sizeof(WCHAR);
+	extra->Wow64CobraSboxDll_offset = ULONG_DIFF(ptr, extra);
+	extra->Wow64CobraSboxDll_length = len * sizeof(WCHAR);
 	ptr += len + 1;
 #endif _WIN64
 
@@ -621,7 +621,7 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 	// Copy the required non shell code into INJECT_DATA.DetourCode_*
 	//
 
-	memcpy((UCHAR*)ptr + FIELD_OFFSET(INJECT_DATA, DetourCode_x86), SbieDll_ShellCode_x86, sizeof(SbieDll_ShellCode_x86));
+	memcpy((UCHAR*)ptr + FIELD_OFFSET(INJECT_DATA, DetourCode_x86), CobraSboxDll_ShellCode_x86, sizeof(CobraSboxDll_ShellCode_x86));
 #endif
 
 	//
@@ -655,14 +655,14 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 		//
 
 		void* HandleStubHijack = NULL;
-		ULONG* aCode = SbieDll_FindFirstSysCallFunc((ULONG*)Dll_Ntdll, &HandleStubHijack);
+		ULONG* aCode = CobraSboxDll_FindFirstSysCallFunc((ULONG*)Dll_Ntdll, &HandleStubHijack);
 
 		if (aCode == NULL) {
 			SbieApi_Log(2303, L"syscall, wrappers not found");
 			return STATUS_SUCCESS; // we will fail process creation for ec processes later
 		}
 
-		void* EcExitThunkPtr = SbieDll_GetEcExitThunkPtr(HandleStubHijack);
+		void* EcExitThunkPtr = CobraSboxDll_GetEcExitThunkPtr(HandleStubHijack);
 
 		//
 		// create the syscall EC data from the ntdll.sll's syscall wrapper functions
@@ -677,7 +677,7 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 			if (SyscallNum == -1)
 				continue;
 
-			if (SbieDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
+			if (CobraSboxDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
 
 				SyscallPtrEC[0] = SyscallNum;
 				SyscallPtrEC[1] = ULONG_DIFF(aCode, Dll_Ntdll);
@@ -744,7 +744,7 @@ _FX ULONG SbieDll_InjectLow_InitSyscalls(BOOLEAN drv_init)
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_handle)
+_FX ULONG CobraSboxDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_handle)
 {
 	//SVC_PROCESS_MSG *msg = (SVC_PROCESS_MSG *)_msg;
 	ULONG errlvl = 0;
@@ -885,7 +885,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 #endif
 		lowLevel_size = m_sbielow_len;
 		
-	void *remote_addr = SbieDll_InjectLow_CopyCode(hProcess, lowLevel_size, lowdata.LdrInitializeThunk_tramp, sizeof(lowdata.LdrInitializeThunk_tramp)
+	void *remote_addr = CobraSboxDll_InjectLow_CopyCode(hProcess, lowLevel_size, lowdata.LdrInitializeThunk_tramp, sizeof(lowdata.LdrInitializeThunk_tramp)
 #ifdef _M_ARM64
 		, (BOOLEAN)lowdata.flags.is_arm64ec
 #endif
@@ -898,7 +898,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 #ifndef _M_ARM64
 #ifdef _WIN64
 	lowdata.flags.long_diff = 1;
-	if (SbieDll_Has32BitJumpHorizon((void *)m_LdrInitializeThunk, remote_addr)) {
+	if (CobraSboxDll_Has32BitJumpHorizon((void *)m_LdrInitializeThunk, remote_addr)) {
 		lowdata.flags.long_diff = 0;
 	}
 #else
@@ -913,7 +913,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 		//
 
 		lowdata.api_device_handle = (ULONG64)(ULONG_PTR)
-			SbieDll_InjectLow_SendHandle(hProcess);
+			CobraSboxDll_InjectLow_SendHandle(hProcess);
 		if (!lowdata.api_device_handle) {
 
 			errlvl = 0x22;
@@ -954,7 +954,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 		+ m_sbielow_data_offset     // offset of args area
 		+ FIELD_OFFSET(SBIELOW_DATA, LdrInitializeThunk_tramp);
 
-	if (!SbieDll_InjectLow_BuildTramp(lowdata.flags.long_diff == 1,
+	if (!CobraSboxDll_InjectLow_BuildTramp(lowdata.flags.long_diff == 1,
 		lowdata.LdrInitializeThunk_tramp, tramp_remote_addr
 #ifdef _M_ARM64
 			, (BOOLEAN)lowdata.flags.is_arm64ec
@@ -979,7 +979,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 	// copy the syscall data buffer (m_syscall_data) to target process
 	//
 
-	void* remote_syscall_data = SbieDll_InjectLow_CopySyscalls(hProcess, (BOOLEAN)lowdata.flags.is_wow64
+	void* remote_syscall_data = CobraSboxDll_InjectLow_CopySyscalls(hProcess, (BOOLEAN)lowdata.flags.is_wow64
 #ifdef _M_ARM64
 		, (BOOLEAN)lowdata.flags.is_arm64ec
 #endif
@@ -996,7 +996,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 	// write lowdata parameter area, including the converted trampoline
 	// code, into target process, and make it execute-read
 	//
-	if (!SbieDll_InjectLow_CopyData(hProcess, remote_addr, &lowdata)) {
+	if (!CobraSboxDll_InjectLow_CopyData(hProcess, remote_addr, &lowdata)) {
 
 		errlvl = 0x66;
 		goto finish;
@@ -1008,7 +1008,7 @@ _FX ULONG SbieDll_InjectLow(HANDLE hProcess, ULONG init_flags, BOOLEAN dup_drv_h
 	//
 	// Removed hard coded dependency on (.HEAD.00). No longer need to add 8 to
 	// the remote_addr
-	if (!SbieDll_InjectLow_WriteJump(hProcess, (UCHAR *)remote_addr + m_sbielow_start_offset, lowdata.flags.long_diff == 1
+	if (!CobraSboxDll_InjectLow_WriteJump(hProcess, (UCHAR *)remote_addr + m_sbielow_start_offset, lowdata.flags.long_diff == 1
 #ifdef _M_ARM64
 		, (BOOLEAN)lowdata.flags.is_arm64ec
 #endif
@@ -1080,7 +1080,7 @@ _FX void* InjectLow_AllocMemory(HANDLE hProcess, SIZE_T size, BOOLEAN executable
 //---------------------------------------------------------------------------
 
 
-_FX HANDLE SbieDll_InjectLow_SendHandle(HANDLE hProcess)
+_FX HANDLE CobraSboxDll_InjectLow_SendHandle(HANDLE hProcess)
 {
 	NTSTATUS status;
 	HANDLE HandleLocal, HandleRemote;
@@ -1127,7 +1127,7 @@ _FX HANDLE SbieDll_InjectLow_SendHandle(HANDLE hProcess)
 //---------------------------------------------------------------------------
 
 
-_FX void *SbieDll_InjectLow_CopyCode(HANDLE hProcess, SIZE_T lowLevel_size, UCHAR *code, ULONG code_len
+_FX void *CobraSboxDll_InjectLow_CopyCode(HANDLE hProcess, SIZE_T lowLevel_size, UCHAR *code, ULONG code_len
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
@@ -1190,7 +1190,7 @@ _FX void *SbieDll_InjectLow_CopyCode(HANDLE hProcess, SIZE_T lowLevel_size, UCHA
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_InjectLow_BuildTramp(
+_FX BOOLEAN CobraSboxDll_InjectLow_BuildTramp(
 	BOOLEAN long_diff, UCHAR *code, ULONG_PTR addr
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
@@ -1341,7 +1341,7 @@ _FX BOOLEAN SbieDll_InjectLow_BuildTramp(
 //---------------------------------------------------------------------------
 
 
-_FX void *SbieDll_InjectLow_CopySyscalls(HANDLE hProcess, BOOLEAN is_wow64
+_FX void *CobraSboxDll_InjectLow_CopySyscalls(HANDLE hProcess, BOOLEAN is_wow64
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
@@ -1389,7 +1389,7 @@ _FX void *SbieDll_InjectLow_CopySyscalls(HANDLE hProcess, BOOLEAN is_wow64
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_InjectLow_CopyData(
+_FX BOOLEAN CobraSboxDll_InjectLow_CopyData(
 	HANDLE hProcess, void *remote_addr, void *local_data)
 {
 	//
@@ -1407,7 +1407,7 @@ _FX BOOLEAN SbieDll_InjectLow_CopyData(
 		ULONG protect;
 		vm_ok = VirtualProtectEx(hProcess, remote_addr, m_sbielow_len,
 			// we want to be able to pass data from the low level dll we do this here
-			// we set PAGE_EXECUTE_READ in SbieDll.dll Dll_Ordinal1
+			// we set PAGE_EXECUTE_READ in CobraSboxDll.dll Dll_Ordinal1
 			PAGE_EXECUTE_READWRITE, &protect);
 			//PAGE_EXECUTE_READ, &protect);
 		if (vm_ok) {
@@ -1421,7 +1421,7 @@ _FX BOOLEAN SbieDll_InjectLow_CopyData(
 #ifndef _M_ARM64
 #ifdef _WIN64
 
-_FX BOOLEAN SbieDll_Has32BitJumpHorizon(void * target, void * detour)
+_FX BOOLEAN CobraSboxDll_Has32BitJumpHorizon(void * target, void * detour)
 {
 	ULONG_PTR diff;
 	long long delta;
@@ -1435,7 +1435,7 @@ _FX BOOLEAN SbieDll_Has32BitJumpHorizon(void * target, void * detour)
 	return FALSE;
 }
 
-_FX void * SbieDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr)
+_FX void * CobraSboxDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr)
 {
 	SIZE_T mySize;
 	ULONG_PTR tempAddr;
@@ -1475,7 +1475,7 @@ _FX void * SbieDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr)
 
 	if (myTable) {
 		mySize = 0;
-		if (SbieDll_Has32BitJumpHorizon(myTable, func)) {
+		if (CobraSboxDll_Has32BitJumpHorizon(myTable, func)) {
 			WriteProcessMemory(hProcess, myTable, &remote_addr, 8, &mySize);
 			/*
 			sprintf(buffer,"myPage = %p, kernel32 = %p, ntdll = %p\n",myTable,myKernel32,myNtDll);
@@ -1544,7 +1544,7 @@ _FX void * SbieDll_InjectLow_getPage(HANDLE hProcess, void *remote_addr)
 //---------------------------------------------------------------------------
 // InjectLow_WriteJump
 //---------------------------------------------------------------------------
-_FX BOOLEAN SbieDll_InjectLow_WriteJump(HANDLE hProcess, void *remote_addr, BOOLEAN long_diff
+_FX BOOLEAN CobraSboxDll_InjectLow_WriteJump(HANDLE hProcess, void *remote_addr, BOOLEAN long_diff
 #ifdef _M_ARM64
 	, BOOLEAN use_arm64ec
 #endif
@@ -1602,7 +1602,7 @@ _FX BOOLEAN SbieDll_InjectLow_WriteJump(HANDLE hProcess, void *remote_addr, BOOL
 
 			len1 = 6;
 			target = (ULONG_PTR)&func[6];
-			myTable = SbieDll_InjectLow_getPage(hProcess, remote_addr);
+			myTable = CobraSboxDll_InjectLow_getPage(hProcess, remote_addr);
 			if (!myTable) {
 				//OutputDebugStringA("Error: Table not set!\n");
 				return FALSE;

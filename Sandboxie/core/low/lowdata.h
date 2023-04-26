@@ -133,7 +133,7 @@ typedef struct _SBIELOW_DATA {
 #define SBIELOW_SYMBOL_SECTION     "zzzz"
 
 //
-// additional strings that are used to inject SbieDll are passed in
+// additional strings that are used to inject CobraSboxDll are passed in
 // the syscall data area.  the second ULONG in the syscall data area
 // specifies the offset to this extra data structure
 //
@@ -151,14 +151,14 @@ typedef struct _SBIELOW_EXTRA_DATA {
     ULONG KernelDll_offset;
     ULONG KernelDll_length;
 
-    ULONG NativeSbieDll_offset;
-    ULONG NativeSbieDll_length;
+    ULONG NativeCobraSboxDll_offset;
+    ULONG NativeCobraSboxDll_length;
 #ifdef _M_ARM64
-    ULONG Arm64ecSbieDll_offset;
-    ULONG Arm64ecSbieDll_length;
+    ULONG Arm64ecCobraSboxDll_offset;
+    ULONG Arm64ecCobraSboxDll_length;
 #endif
-    ULONG Wow64SbieDll_offset;
-    ULONG Wow64SbieDll_length;
+    ULONG Wow64CobraSboxDll_offset;
+    ULONG Wow64CobraSboxDll_length;
 
     ULONG InjectData_offset;
 
@@ -235,13 +235,13 @@ typedef struct _INJECT_DATA {
     ULONG   KerneDll_Buf32;
     ULONG64 KerneDll_Buf64;
 
-    USHORT  SbieDll_Length;         // 80
-    USHORT  SbieDll_MaxLen;
-    ULONG   SbieDll_Buf32;
-    ULONG64 SbieDll_Buf64;
+    USHORT  CobraSboxDll_Length;         // 80
+    USHORT  CobraSboxDll_MaxLen;
+    ULONG   CobraSboxDll_Buf32;
+    ULONG64 CobraSboxDll_Buf64;
 
     ULONG64 ModuleHandle;           // 96
-    ULONG64 SbieDllOrdinal1;        // 104
+    ULONG64 CobraSboxDllOrdinal1;        // 104
 
     ULONG64 MyGetProcAddr;          // 112
 

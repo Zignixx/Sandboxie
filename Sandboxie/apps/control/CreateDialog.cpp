@@ -176,7 +176,7 @@ void CCreateDialog::OnOK()
     }
 
     if (!errmsg && len <= 8) {
-        if(SbieDll_IsReservedFileName(name))
+        if(CobraSboxDll_IsReservedFileName(name))
             errmsg = MSG_3667;
     }
 

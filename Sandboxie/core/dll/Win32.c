@@ -43,11 +43,11 @@ BOOLEAN Win32_HookWin32WoW64();
 
 #ifdef _M_ARM64EC
 ULONG Hook_GetSysCallFunc(ULONG* aCode, void** pHandleStubHijack);
-ULONG* SbieDll_FindFirstSysCallFunc(ULONG* aCode, void** pHandleStubHijack);
-void* SbieDll_GetEcExitThunk(void* HandleStubHijack);
+ULONG* CobraSboxDll_FindFirstSysCallFunc(ULONG* aCode, void** pHandleStubHijack);
+void* CobraSboxDll_GetEcExitThunk(void* HandleStubHijack);
 #endif
 
-ULONG SbieDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index);
+ULONG CobraSboxDll_GetSysCallOffset(const ULONG *SyscallPtr, ULONG syscall_index);
 
 extern SBIELOW_DATA* SbieApi_data;
 #define SBIELOW_CALL(x) ((P_##x)&data->x##_code)
@@ -90,7 +90,7 @@ _FX BOOLEAN Win32_HookWin32SysCalls(HMODULE win32u_base)
 
 #ifdef _M_ARM64EC
 
-	ULONG* aCode = SbieDll_FindFirstSysCallFunc((ULONG*)win32u_base, NULL);
+	ULONG* aCode = CobraSboxDll_FindFirstSysCallFunc((ULONG*)win32u_base, NULL);
 	if (aCode == NULL) {
         HeapFree(GetProcessHeap(), 0, syscall_data);
         return FALSE;
@@ -102,7 +102,7 @@ _FX BOOLEAN Win32_HookWin32SysCalls(HMODULE win32u_base)
 		if (SyscallNum == -1)
 			continue;
 
-		if (SbieDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
+		if (CobraSboxDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
 
             RegionBase = aCode;
 
@@ -262,7 +262,7 @@ _FX BOOLEAN Win32_Init(HMODULE hmodule)
     //
 
     BOOLEAN useByDefualt = (Dll_ImageType == DLL_IMAGE_GOOGLE_CHROME);
-    if (SbieDll_GetSettingsForName_bool(NULL, Dll_ImageName, L"UseWin32kHooks", useByDefualt)) {
+    if (CobraSboxDll_GetSettingsForName_bool(NULL, Dll_ImageName, L"UseWin32kHooks", useByDefualt)) {
 
         // disable Electron Workaround when we are ready to hook the required win32k syscalls
         extern BOOL Dll_ElectronWorkaround;
@@ -435,7 +435,7 @@ _FX BOOLEAN Win32_HookWin32WoW64()
 		    if (SyscallNum == -1)
 			    continue;
 
-		    if (SbieDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
+		    if (CobraSboxDll_GetSysCallOffset(SyscallPtr, SyscallNum)) {
 
                 DWORD64 offset = (DWORD64)aCode - (DWORD64)dll_data;
 
@@ -513,7 +513,7 @@ _FX BOOLEAN Win32_HookWin32WoW64()
             SyscallNum = Win32_GetSysCallNumberWoW64(pos, dll_data);
             if (SyscallNum)
             {
-                if (SbieDll_GetSysCallOffset(SyscallPtr, SyscallNum))
+                if (CobraSboxDll_GetSysCallOffset(SyscallPtr, SyscallNum))
                 {
                     RegionBase = BaseAddress + pos;
                     RegionSize = 14;

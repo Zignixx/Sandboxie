@@ -316,12 +316,12 @@ LdrLoadRetry
 
 LdrLoadGood
 	;
-	; call LdrLoadDll for sbiedll
+	; call LdrLoadDll for CobraSboxDll
 	;
 
     mov     x0, #0x00                       ; PathToFile
     mov     x1, #0x00                       ; Flags
-    add     x2, x19, 0x50                   ; [x19].InjectData.SbieDll_Unicode
+    add     x2, x19, 0x50                   ; [x19].InjectData.CobraSboxDll_Unicode
     add     x3, x19, 0x60                   ; [x19].InjectData.ModuleHandle
 
     ldr     x8, [x19, 0x08]                 ; [x19].InjectData.LdrLoadDll
@@ -331,8 +331,8 @@ LdrLoadGood
 
 	;
 	; call the custom MyGetProcedureAddress implemented in c
-    ; which calls LdrGetProcedureAddress for sbiedll ordinal 1,
-	; this forces ntdll to initialize sbiedll and returns the address to call
+    ; which calls LdrGetProcedureAddress for CobraSboxDll ordinal 1,
+	; this forces ntdll to initialize CobraSboxDll and returns the address to call
     ; 
     ; in ARM64EC mode it returns the native function address instead of the FFS sequence
 	;
@@ -340,7 +340,7 @@ LdrLoadGood
     ldr     x0, [x19, 0x60]                 ; [x19].InjectData.ModuleHandle
     mov     x1, #0x00                       ; FunctionName
     mov     x2, #0x01                       ; Ordinal
-    add     x3, x19, 0x68                   ; [x19].InjectData.SbieDllOrdinal1
+    add     x3, x19, 0x68                   ; [x19].InjectData.CobraSboxDllOrdinal1
     mov     x4, x19                         ; [x19].InjectData
 
     ;ldr     x8, [x19, 0x10]                 ; [x19].InjectData.LdrGetProcAddr
@@ -368,7 +368,7 @@ LdrLoadGood
     ldp     x4, x5, [sp, #0x20]
     ldp     x6, x7, [sp, #0x30]
 
-    ldr     x8, [x19, 0x68]                 ; [x19].InjectData.SbieDllOrdinal1
+    ldr     x8, [x19, 0x68]                 ; [x19].InjectData.CobraSboxDllOrdinal1
 
     add     sp, sp, #0x40
     ldp     x19, x20, [sp], #0x10
@@ -380,7 +380,7 @@ RtlFindActivationContextSectionStringError
 
     str     x0, [sp, #0x38]                 ; save ntstatus
 
-    add     x8, x19, 0x50                   ; [x19].InjectData.SbieDll_Unicode
+    add     x8, x19, 0x50                   ; [x19].InjectData.CobraSboxDll_Unicode
     str	    x8, [x19, 0x08]                 ; [x19].InjectData.LdrLoadDll
 
     add     x5, x19, 0x10                   ; out_response - [x19].InjectData.LdrGetProcAddr

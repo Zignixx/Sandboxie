@@ -68,8 +68,8 @@ _FX BOOLEAN Obj_Init(void)
 #if 0
     __sys_NtQueryObject = NtQueryObject;
 #else
-    SBIEDLL_HOOK(Obj_,NtQueryObject);
-    SBIEDLL_HOOK(Obj_,NtQueryVirtualMemory);
+    CobraSboxDll_HOOK(Obj_,NtQueryObject);
+    CobraSboxDll_HOOK(Obj_,NtQueryVirtualMemory);
 #endif
 
     return TRUE;

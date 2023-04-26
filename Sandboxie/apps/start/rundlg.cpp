@@ -25,7 +25,7 @@
 #include "msgs/msgs.h"
 #include "common/list.c"
 #define COBJMACROS
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "core/dll/pstore.h"
 #include "common/defines.h"
 #include "apps/common/CommonUtils.h"
@@ -91,7 +91,7 @@ void LoadHistory(void)
     HIST_ITEM *hist_item;
 
     List_Init(&history);
-    pst = (IPStore*)SbieDll_InitPStore();
+    pst = (IPStore*)CobraSboxDll_InitPStore();
     if (! pst)
         return;
 
@@ -400,7 +400,7 @@ void PrepareRunAsAdmin(HWND hwnd, const WCHAR *BoxName, BOOLEAN JustAdmin)
 
     ctrl = GetDlgItem(hwnd, IDRUNADMIN);
     if (ctrl) {
-        SetWindowText(ctrl, SbieDll_FormatMessage0(MSG_3414));
+        SetWindowText(ctrl, CobraSboxDll_FormatMessage0(MSG_3414));
         if (run_elevated_2)
             SendMessage(ctrl, BM_SETCHECK, BST_CHECKED, 0);
         if (disable_button)
@@ -462,7 +462,7 @@ void AddToolTipForRunAsAdmin(HWND hDialog, HWND hwndToolTip)
             ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
             GetWindowRect(ctrl, &ti.rect);
             MapWindowPoints(NULL, hDialog, (LPPOINT)&ti.rect, 2);
-            ti.lpszText = SbieDll_FormatMessage0(msg);
+            ti.lpszText = CobraSboxDll_FormatMessage0(msg);
 
             SendMessage(hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&ti);
 
@@ -504,17 +504,17 @@ INT_PTR RunDialogProc(
             // assign text strings
             //
 
-            SetWindowText(hwnd, SbieDll_FormatMessage0(MSG_3052));
+            SetWindowText(hwnd, CobraSboxDll_FormatMessage0(MSG_3052));
 
-            SetDlgItemText(hwnd, IDOK, SbieDll_FormatMessage0(MSG_3001));
-            SetDlgItemText(hwnd, IDCANCEL, SbieDll_FormatMessage0(MSG_3002));
-            SetDlgItemText(hwnd, IDBROWSE, SbieDll_FormatMessage0(MSG_3003));
+            SetDlgItemText(hwnd, IDOK, CobraSboxDll_FormatMessage0(MSG_3001));
+            SetDlgItemText(hwnd, IDCANCEL, CobraSboxDll_FormatMessage0(MSG_3002));
+            SetDlgItemText(hwnd, IDBROWSE, CobraSboxDll_FormatMessage0(MSG_3003));
 
             extern BOOL execute_open_with;
             if (execute_open_with)
             {
                 SetDlgItemText(hwnd, IDRUNDLGTEXT,
-                           SbieDll_FormatMessage0(MSG_3107));
+                           CobraSboxDll_FormatMessage0(MSG_3107));
 
                 extern PWSTR ChildCmdLine;
                 SetDlgItemText(hwnd, IDRUNDLGTEXT2, ChildCmdLine);
@@ -522,10 +522,10 @@ INT_PTR RunDialogProc(
             else
             {
                 SetDlgItemText(hwnd, IDRUNDLGTEXT,
-                           SbieDll_FormatMessage0(MSG_3103));
+                           CobraSboxDll_FormatMessage0(MSG_3103));
 
                 SetDlgItemText(hwnd, IDRUNDLGTEXT2,
-                           SbieDll_FormatMessage0(MSG_3104));
+                           CobraSboxDll_FormatMessage0(MSG_3104));
             }
 
             //
@@ -591,7 +591,7 @@ INT_PTR RunDialogProc(
             ti.hwnd = hwnd;
             ti.uId = (UINT_PTR)ctrl;
             ti.hinst = (HINSTANCE)lParam;
-            ti.lpszText = SbieDll_FormatMessage0(MSG_3105);
+            ti.lpszText = CobraSboxDll_FormatMessage0(MSG_3105);
             ti.lParam = 0;
 
             SendMessage(hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&ti);
@@ -719,7 +719,7 @@ WCHAR *DoRunDialog(HINSTANCE hInstance)
 
         LoadHistory();
 
-        msg_3308 = SbieDll_FormatMessage0(MSG_3308);
+        msg_3308 = CobraSboxDll_FormatMessage0(MSG_3308);
         while (1) {
             WCHAR *ptr = wcsrchr(msg_3308, L'#');
             if (! ptr)

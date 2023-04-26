@@ -32,7 +32,7 @@
 #include "DriverAssist.h"
 #include "common/defines.h"
 #include "common/my_version.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "core/drv/api_defs.h"
 #include "sbieiniserver.h"
 
@@ -135,7 +135,7 @@ bool DriverAssist::InitializePortAndThreads()
     //
 
     wsprintf(PortName, L"%s-internal-%d",
-             SbieDll_PortName(), GetTickCount());
+             CobraSboxDll_PortName(), GetTickCount());
     RtlInitUnicodeString(&objname, PortName);
 
     InitializeObjectAttributes(
@@ -606,7 +606,7 @@ void DriverAssist::MountedHive(void *_msg)
         status = SbieApi_QueryBoxPath(msg->boxname, path, NULL, NULL, &len, NULL, NULL);
         if (status == 0 && wcslen(path) > 22) {
 
-            if (SbieDll_TranslateNtToDosPath(path)) {
+            if (CobraSboxDll_TranslateNtToDosPath(path)) {
 
                 if (!VolHas8dot3Support(path)) {
 

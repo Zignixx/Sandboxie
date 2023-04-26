@@ -54,7 +54,7 @@ _FX NTSTATUS Key_OpenIfBoxed(
 
     if (NT_SUCCESS(status)) {
 
-        ULONG mp_flags = SbieDll_MatchPath(L'k', name);
+        ULONG mp_flags = CobraSboxDll_MatchPath(L'k', name);
 
         if ((mp_flags & ~PATH_WRITE_FLAG) != 0)
             status = STATUS_BAD_INITIAL_PC;

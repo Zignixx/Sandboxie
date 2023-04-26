@@ -290,7 +290,7 @@
     <ClInclude Include="sbieapi.h">
       <Filter>api</Filter>
     </ClInclude>
-    <ClInclude Include="sbiedll.h">
+    <ClInclude Include="CobraSboxDll.h">
       <Filter>api</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\stream.h">

@@ -396,7 +396,7 @@ _FX VOID File_SavePathTree_internal(LIST* Root, const WCHAR* name)
     wcscpy(PathsFile, Dll_BoxFilePath);
     wcscat(PathsFile, L"\\");
     wcscat(PathsFile, name);
-    SbieDll_TranslateNtToDosPath(PathsFile);
+    CobraSboxDll_TranslateNtToDosPath(PathsFile);
 
     HANDLE hPathsFile;
     hPathsFile = CreateFile(PathsFile, FILE_APPEND_DATA, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -476,7 +476,7 @@ _FX BOOLEAN File_LoadPathTree_internal(LIST* Root, const WCHAR* name)
     wcscpy(PathsFile, Dll_BoxFilePath);
     wcscat(PathsFile, L"\\");
     wcscat(PathsFile, name);
-    SbieDll_TranslateNtToDosPath(PathsFile);
+    CobraSboxDll_TranslateNtToDosPath(PathsFile);
 
     HANDLE hPathsFile;
     hPathsFile = CreateFile(PathsFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -611,7 +611,7 @@ _FX BOOLEAN File_InitDelete_v2()
 
     WCHAR BoxFilePath[MAX_PATH] = { 0 };
     wcscpy(BoxFilePath, Dll_BoxFilePath);
-    SbieDll_TranslateNtToDosPath(BoxFilePath);
+    CobraSboxDll_TranslateNtToDosPath(BoxFilePath);
 
     File_BoxRootWatcher = FindFirstChangeNotification(BoxFilePath, FALSE, FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE);
 
@@ -850,5 +850,5 @@ BOOL File_GetAttributes_internal(const WCHAR *name, ULONG64 *size, ULONG64 *date
     wcscat(PathsFile, L"\\");
     wcscat(PathsFile, name);
 
-    return SbieDll_QueryFileAttributes(PathsFile, size, date, attrs);
+    return CobraSboxDll_QueryFileAttributes(PathsFile, size, date, attrs);
 }

@@ -285,20 +285,20 @@ BOOLEAN Config_String2Bool(const WCHAR* value, BOOLEAN defval)
 
 _FX BOOLEAN Config_GetSettingsForImageName_bool(const WCHAR* setting, BOOLEAN defval)
 {
-    return SbieDll_GetSettingsForName_bool(NULL, Dll_ImageName, setting, defval);
+    return CobraSboxDll_GetSettingsForName_bool(NULL, Dll_ImageName, setting, defval);
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetSettingsForName_bool
+// CobraSboxDll_GetSettingsForName_bool
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_GetSettingsForName_bool(
+_FX BOOLEAN CobraSboxDll_GetSettingsForName_bool(
     const WCHAR* boxname, const WCHAR* name, const WCHAR* setting, BOOLEAN defval)
 {
     WCHAR value[16];
-    SbieDll_GetSettingsForName(boxname, name, setting, value, sizeof(value), NULL);
+    CobraSboxDll_GetSettingsForName(boxname, name, setting, value, sizeof(value), NULL);
     return Config_String2Bool(value, defval);
 }
 
@@ -324,7 +324,7 @@ _FX BOOLEAN Config_InitPatternList(const WCHAR* boxname, const WCHAR* setting, L
         ++index;
 
         if (dos) 
-            SbieDll_TranslateNtToDosPath(conf_buf);
+            CobraSboxDll_TranslateNtToDosPath(conf_buf);
         
         ULONG level;
         WCHAR* value = Config_MatchImageAndGetValue(conf_buf, Dll_ImageName, &level);
@@ -358,11 +358,11 @@ _FX VOID Config_FreePatternList(LIST *list)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetSettingsForName
+// CobraSboxDll_GetSettingsForName
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_GetSettingsForName(
+_FX BOOLEAN CobraSboxDll_GetSettingsForName(
     const WCHAR* boxname, const WCHAR* name, const WCHAR* setting, WCHAR* value, ULONG value_size, const WCHAR* deftext)
 {
     WCHAR conf_buf[2048];
@@ -400,11 +400,11 @@ _FX BOOLEAN SbieDll_GetSettingsForName(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetBorderColor
+// CobraSboxDll_GetBorderColor
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_GetBorderColor(const WCHAR* box_name, COLORREF* color, BOOL* title, int* width)
+BOOLEAN CobraSboxDll_GetBorderColor(const WCHAR* box_name, COLORREF* color, BOOL* title, int* width)
 {
 #ifndef RGB
 #define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
@@ -456,11 +456,11 @@ BOOLEAN SbieDll_GetBorderColor(const WCHAR* box_name, COLORREF* color, BOOL* tit
 
 
 //---------------------------------------------------------------------------
-// SbieDll_MatchImage
+// CobraSboxDll_MatchImage
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_MatchImage_Impl(const WCHAR* pat_str, ULONG pat_len, const WCHAR* test_str, const WCHAR* BoxName, ULONG depth)
+BOOLEAN CobraSboxDll_MatchImage_Impl(const WCHAR* pat_str, ULONG pat_len, const WCHAR* test_str, const WCHAR* BoxName, ULONG depth)
 {
     if (*pat_str == L'<') {
 
@@ -508,7 +508,7 @@ BOOLEAN SbieDll_MatchImage_Impl(const WCHAR* pat_str, ULONG pat_len, const WCHAR
 
                 if (value_len) {
 
-                    if (SbieDll_MatchImage_Impl(value, value_len, test_str, BoxName, depth + 1))
+                    if (CobraSboxDll_MatchImage_Impl(value, value_len, test_str, BoxName, depth + 1))
                         return TRUE;
                 }
 
@@ -531,19 +531,19 @@ BOOLEAN SbieDll_MatchImage_Impl(const WCHAR* pat_str, ULONG pat_len, const WCHAR
 }
 
 
-BOOLEAN SbieDll_MatchImage(const WCHAR* pat_str, const WCHAR* test_str, const WCHAR* BoxName)
+BOOLEAN CobraSboxDll_MatchImage(const WCHAR* pat_str, const WCHAR* test_str, const WCHAR* BoxName)
 {
     ULONG pat_len = wcslen(pat_str);
-    return SbieDll_MatchImage_Impl(pat_str, pat_len, test_str, BoxName, 1);
+    return CobraSboxDll_MatchImage_Impl(pat_str, pat_len, test_str, BoxName, 1);
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetStringForStringList
+// CobraSboxDll_GetStringForStringList
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_GetStringForStringList(const WCHAR* string, const WCHAR* boxname, const WCHAR* setting, WCHAR* value, ULONG value_size)
+BOOLEAN CobraSboxDll_GetStringForStringList(const WCHAR* string, const WCHAR* boxname, const WCHAR* setting, WCHAR* value, ULONG value_size)
 {
     BOOLEAN found = FALSE;
     WCHAR buf[CONF_LINE_LEN];
@@ -576,11 +576,11 @@ BOOLEAN SbieDll_GetStringForStringList(const WCHAR* string, const WCHAR* boxname
 
 
 //---------------------------------------------------------------------------
-// SbieDll_CheckStringInList
+// CobraSboxDll_CheckStringInList
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_CheckStringInList(const WCHAR* string, const WCHAR* boxname, const WCHAR* setting)
+BOOLEAN CobraSboxDll_CheckStringInList(const WCHAR* string, const WCHAR* boxname, const WCHAR* setting)
 {
     WCHAR buf[66];
     ULONG index = 0;
@@ -600,11 +600,11 @@ BOOLEAN SbieDll_CheckStringInList(const WCHAR* string, const WCHAR* boxname, con
 
 
 //---------------------------------------------------------------------------
-// SbieDll_CheckStringInList
+// CobraSboxDll_CheckStringInList
 //---------------------------------------------------------------------------
 
 
-BOOLEAN SbieDll_CheckPatternInList(const WCHAR* string, ULONG length, const WCHAR* boxname, const WCHAR* setting)
+BOOLEAN CobraSboxDll_CheckPatternInList(const WCHAR* string, ULONG length, const WCHAR* boxname, const WCHAR* setting)
 {
     LIST Patterns;
     BOOLEAN ret = FALSE;

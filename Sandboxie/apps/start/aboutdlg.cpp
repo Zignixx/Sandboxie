@@ -24,7 +24,7 @@
 #include "resource.h"
 #include "msgs/msgs.h"
 #define COBJMACROS
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "core/dll/pstore.h"
 #include "common/defines.h"
 #include "apps/common/CommonUtils.h"
@@ -153,7 +153,7 @@ INT_PTR AboutDialogProc(
             // set window title
             //
 
-            SetWindowText(hwnd, SScopedStr(SbieDll_FormatMessage0(MSG_3601)).c_str);
+            SetWindowText(hwnd, SScopedStr(CobraSboxDll_FormatMessage0(MSG_3601)).c_str);
 
             //
             // set info text
@@ -164,25 +164,25 @@ INT_PTR AboutDialogProc(
             {
                 WCHAR sDays[10];
                 swprintf(sDays, L"%d", Days);
-                wcscpy(info, SScopedStr(SbieDll_FormatMessage1(MSG_6010, sDays)).c_str);
+                wcscpy(info, SScopedStr(CobraSboxDll_FormatMessage1(MSG_6010, sDays)).c_str);
 
                 for (int s = rand() % 3, i = 0; i < 3; i++)
                     btnActions[i] = (s + i) % 3;
 
-                SetDlgItemText(hwnd, ID_BUTTON_2, SScopedStr(SbieDll_FormatMessage0(MSG_6011)).c_str);
+                SetDlgItemText(hwnd, ID_BUTTON_2, SScopedStr(CobraSboxDll_FormatMessage0(MSG_6011)).c_str);
 
                 timer_id = SetTimer(hwnd, 'wait', 1000, NULL);
             }
             else
             {
-                wcscpy(info, SScopedStr(SbieDll_FormatMessage1(MSG_3302, _T(MY_VERSION_STRING))).c_str);
+                wcscpy(info, SScopedStr(CobraSboxDll_FormatMessage1(MSG_3302, _T(MY_VERSION_STRING))).c_str);
                 wcscat(info, L"\r\n\r\n");
                 wcscat(info, _T(MY_COPYRIGHT_STRING));
                 wcscat(info, L"\r\n");
                 wcscat(info, _T(MY_COPYRIGHT_STRING_OLD));
 
                 ShowWindow(GetDlgItem(hwnd, ID_BUTTON_1), SW_HIDE);
-                SetDlgItemText(hwnd, ID_BUTTON_2, SScopedStr(SbieDll_FormatMessage0(MSG_3001)).c_str);
+                SetDlgItemText(hwnd, ID_BUTTON_2, SScopedStr(CobraSboxDll_FormatMessage0(MSG_3001)).c_str);
                 ShowWindow(GetDlgItem(hwnd, ID_BUTTON_3), SW_HIDE);
             }
 
@@ -220,9 +220,9 @@ INT_PTR AboutDialogProc(
                     int ButtonIDs[] = { ID_BUTTON_1, ID_BUTTON_2, ID_BUTTON_3 };
                     for (int i = 0; i < 3; i++) {
                         switch (btnActions[i]) {
-                        case 0: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(SbieDll_FormatMessage0(MSG_6013)).c_str); break;
-                        case 1: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(SbieDll_FormatMessage0(MSG_6012)).c_str); break;
-                        case 2: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(SbieDll_FormatMessage0(MSG_6014)).c_str); break;
+                        case 0: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(CobraSboxDll_FormatMessage0(MSG_6013)).c_str); break;
+                        case 1: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(CobraSboxDll_FormatMessage0(MSG_6012)).c_str); break;
+                        case 2: SetDlgItemText(hwnd, ButtonIDs[i], SScopedStr(CobraSboxDll_FormatMessage0(MSG_6014)).c_str); break;
                         }
                     }
 
@@ -336,12 +336,12 @@ bool DoAboutDialog(bool bReminder)
 
         ULONG req = -1;
         ULONG* rpl;
-	    rpl = (ULONG*)SbieDll_CallServerQueue(INTERACTIVE_QUEUE_NAME, &req, sizeof(req), sizeof(*rpl));
+	    rpl = (ULONG*)CobraSboxDll_CallServerQueue(INTERACTIVE_QUEUE_NAME, &req, sizeof(req), sizeof(*rpl));
 	    if (rpl)
 	    {
             ULONG status = rpl[0];
             ULONG retval = rpl[1];
-		    SbieDll_FreeMem(rpl);
+		    CobraSboxDll_FreeMem(rpl);
 
             return !!retval;
 	    }

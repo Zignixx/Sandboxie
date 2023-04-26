@@ -170,17 +170,17 @@ _FX BOOLEAN Gui_InitMsg(HMODULE module)
 
     if (! Gui_OpenAllWinClasses) {
 
-        SBIEDLL_HOOK_GUI(SendMessageA);
-        SBIEDLL_HOOK_GUI(SendMessageW);
+        CobraSboxDll_HOOK_GUI(SendMessageA);
+        CobraSboxDll_HOOK_GUI(SendMessageW);
 
-        SBIEDLL_HOOK_GUI(SendMessageTimeoutA);
-        SBIEDLL_HOOK_GUI(SendMessageTimeoutW);
+        CobraSboxDll_HOOK_GUI(SendMessageTimeoutA);
+        CobraSboxDll_HOOK_GUI(SendMessageTimeoutW);
 
-        SBIEDLL_HOOK_GUI(SendNotifyMessageA);
-        SBIEDLL_HOOK_GUI(SendNotifyMessageW);
+        CobraSboxDll_HOOK_GUI(SendNotifyMessageA);
+        CobraSboxDll_HOOK_GUI(SendNotifyMessageW);
 
-        SBIEDLL_HOOK_GUI(PostMessageA);
-        SBIEDLL_HOOK_GUI(PostMessageW);
+        CobraSboxDll_HOOK_GUI(PostMessageA);
+        CobraSboxDll_HOOK_GUI(PostMessageW);
 
         //
         // hook PostThreadMessage on Vista, see Gui_PostThreadMessage_Check
@@ -192,8 +192,8 @@ _FX BOOLEAN Gui_InitMsg(HMODULE module)
                 GetProcAddress(Dll_Kernel32, "GetProcessIdOfThread");
             if (__sys_GetProcessIdOfThread) {
 
-                SBIEDLL_HOOK_GUI(PostThreadMessageA);
-                SBIEDLL_HOOK_GUI(PostThreadMessageW);
+                CobraSboxDll_HOOK_GUI(PostThreadMessageA);
+                CobraSboxDll_HOOK_GUI(PostThreadMessageW);
             }
         }
     }
@@ -204,19 +204,19 @@ _FX BOOLEAN Gui_InitMsg(HMODULE module)
 
 #ifndef _WIN64
 
-    SBIEDLL_HOOK_GUI(DispatchMessageA);
-    SBIEDLL_HOOK_GUI(DispatchMessageW);
+    CobraSboxDll_HOOK_GUI(DispatchMessageA);
+    CobraSboxDll_HOOK_GUI(DispatchMessageW);
 
 #else _WIN64
 
     if (Dll_OsBuild >= 14942) { // Windows 10 1703 preview #7
         HMODULE hWin32u = GetModuleHandleA("win32u.dll");
         __sys_DispatchMessage8 = (P_DispatchMessage8)GetProcAddress(hWin32u, "NtUserDispatchMessage");
-        SBIEDLL_HOOK_GUI(DispatchMessage8);
+        CobraSboxDll_HOOK_GUI(DispatchMessage8);
     }
     else if (Dll_OsBuild < 8400) {
-        SBIEDLL_HOOK_GUI(DispatchMessageA);
-        SBIEDLL_HOOK_GUI(DispatchMessageW);
+        CobraSboxDll_HOOK_GUI(DispatchMessageA);
+        CobraSboxDll_HOOK_GUI(DispatchMessageW);
     }
     else 
 #ifndef _M_ARM64
@@ -235,7 +235,7 @@ _FX BOOLEAN Gui_InitMsg(HMODULE module)
     //
 
     if (SH_GetInternetExplorerVersion() >= 9) {
-        SBIEDLL_HOOK_GUI(LoadStringW);
+        CobraSboxDll_HOOK_GUI(LoadStringW);
     }
 
     return TRUE;
@@ -907,7 +907,7 @@ _FX BOOLEAN Gui_Hook_DispatchMessage8(HMODULE module)
 
             __sys_DispatchMessage8 = (P_DispatchMessage8)(w + w_offset);
 
-            SBIEDLL_HOOK_GUI(DispatchMessage8);
+            CobraSboxDll_HOOK_GUI(DispatchMessage8);
 
             return TRUE;
         }

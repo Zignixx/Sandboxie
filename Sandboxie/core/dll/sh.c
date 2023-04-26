@@ -42,14 +42,14 @@ static BOOL SH_OpenFolder(const WCHAR *PathW, WCHAR verb, HANDLE *hProcess);
 
 static WCHAR *SH32_AdjustPath(WCHAR *src, WCHAR **pArgs);
 
-static HKEY SbieDll_AssocQueryKeyWow64(const WCHAR *subj);
+static HKEY CobraSboxDll_AssocQueryKeyWow64(const WCHAR *subj);
 
 static BOOL SH32_ShellExecuteExW(SHELLEXECUTEINFOW *lpExecInfo);
 
 static BOOL SH32_Shell_NotifyIconW(
     DWORD dwMessage, PNOTIFYICONDATAW lpData);
 
-static WCHAR *SbieDll_AssocQueryCommandInternal(
+static WCHAR *CobraSboxDll_AssocQueryCommandInternal(
     const WCHAR *subj, const WCHAR *verb);
 
 static ULONG SH32_SHChangeNotifyRegister(
@@ -135,11 +135,11 @@ extern const WCHAR *File_BQQB;
 
 
 //---------------------------------------------------------------------------
-// SbieDll_IsDirectory
+// CobraSboxDll_IsDirectory
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_IsDirectory(const WCHAR *PathW)
+_FX BOOLEAN CobraSboxDll_IsDirectory(const WCHAR *PathW)
 {
     NTSTATUS status;
     WCHAR *ntpath, *dummy;
@@ -336,7 +336,7 @@ _FX BOOL SH32_ShellExecuteExW(SHELLEXECUTEINFOW *lpExecInfo)
                 FreePath = TRUE;
         }
 
-        if (SbieDll_IsDirectory(path))
+        if (CobraSboxDll_IsDirectory(path))
             CallSystem = FALSE;
     }
 
@@ -539,7 +539,7 @@ _FX BOOL SH32_Shell_NotifyIconW(
         }
 
         COLORREF color;
-        if (SbieDll_GetBorderColor(NULL, &color, NULL, NULL))
+        if (CobraSboxDll_GetBorderColor(NULL, &color, NULL, NULL))
         {
             HICON newIcon = SH32_BorderToIcon(lpData->hIcon, color);
             if (newIcon) {
@@ -982,9 +982,9 @@ _FX BOOLEAN SH32_Init(HMODULE module)
     SHOpenFolderAndSelectItems = (P_SHOpenFolderAndSelectItems)
         GetProcAddress(module, "SHOpenFolderAndSelectItems");
 
-    SBIEDLL_HOOK(SH32_,ShellExecuteExW);
+    CobraSboxDll_HOOK(SH32_,ShellExecuteExW);
 
-    SBIEDLL_HOOK(SH32_,Shell_NotifyIconW);
+    CobraSboxDll_HOOK(SH32_,Shell_NotifyIconW);
 
     if (SHChangeNotifyRegister && SHGetItemFromObject) {
 
@@ -993,12 +993,12 @@ _FX BOOLEAN SH32_Init(HMODULE module)
         // to hook SHChangeNotifyRegister only on Windows 7
         //
 
-        SBIEDLL_HOOK(SH32_,SHChangeNotifyRegister);
+        CobraSboxDll_HOOK(SH32_,SHChangeNotifyRegister);
     }
 
     if (SHOpenFolderAndSelectItems) {
 
-        SBIEDLL_HOOK(SH32_,SHOpenFolderAndSelectItems);
+        CobraSboxDll_HOOK(SH32_,SHOpenFolderAndSelectItems);
     }
 
     //
@@ -1045,7 +1045,7 @@ _FX BOOLEAN SH32_Init(HMODULE module)
         if (__sys_LdrGetDllHandleEx) {
 
             *(ULONG_PTR *)&__sys_LdrGetDllHandleEx = (ULONG_PTR)
-                SbieDll_Hook("LdrGetDllHandleEx",
+                CobraSboxDll_Hook("LdrGetDllHandleEx",
                     __sys_LdrGetDllHandleEx, SH32_LdrGetDllHandleEx, module);
         }
 
@@ -1061,7 +1061,7 @@ _FX BOOLEAN SH32_Init(HMODULE module)
             GetPrivateProfileStringW = (P_GetPrivateProfileString)
                 GetProcAddress(Dll_Kernel32, "GetPrivateProfileStringW");
 
-            SBIEDLL_HOOK(SH32_,GetPrivateProfileStringW);
+            CobraSboxDll_HOOK(SH32_,GetPrivateProfileStringW);
         }
 
         //
@@ -1090,7 +1090,7 @@ _FX BOOLEAN SH32_Init(HMODULE module)
             SHGetFolderLocation = (P_SHGetFolderLocation)
                 GetProcAddress(module, "SHGetFolderLocation");
 
-            SBIEDLL_HOOK(SH32_,SHGetFolderLocation);
+            CobraSboxDll_HOOK(SH32_,SHGetFolderLocation);
         }
     }
 
@@ -1099,11 +1099,11 @@ _FX BOOLEAN SH32_Init(HMODULE module)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_AssocQueryKeyWow64
+// CobraSboxDll_AssocQueryKeyWow64
 //---------------------------------------------------------------------------
 
 
-_FX HKEY SbieDll_AssocQueryKeyWow64(const WCHAR *subj)
+_FX HKEY CobraSboxDll_AssocQueryKeyWow64(const WCHAR *subj)
 {
     NTSTATUS status;
     OBJECT_ATTRIBUTES objattrs;
@@ -1170,11 +1170,11 @@ retry:
 
 
 //---------------------------------------------------------------------------
-// SbieDll_AssocQueryCommandInternal
+// CobraSboxDll_AssocQueryCommandInternal
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_AssocQueryCommandInternal(
+_FX WCHAR *CobraSboxDll_AssocQueryCommandInternal(
     const WCHAR *subj, const WCHAR *verb)
 {
     NTSTATUS status;
@@ -1195,7 +1195,7 @@ _FX WCHAR *SbieDll_AssocQueryCommandInternal(
 
     kvpi = Dll_Alloc(kvpi_len);
 
-    hkey = SbieDll_AssocQueryKeyWow64(subj);
+    hkey = CobraSboxDll_AssocQueryKeyWow64(subj);
 
     wcscpy(subkey, L"shell\\");
     wcscat(subkey, verb);
@@ -1234,7 +1234,7 @@ retry:
 
         NtClose(hkey);
 
-        hkey = SbieDll_AssocQueryKeyWow64((WCHAR *)kvpi->Data);
+        hkey = CobraSboxDll_AssocQueryKeyWow64((WCHAR *)kvpi->Data);
 
         goto retry;
     }
@@ -1300,32 +1300,32 @@ finish:
 
 
 //---------------------------------------------------------------------------
-// SbieDll_AssocQueryCommand
+// CobraSboxDll_AssocQueryCommand
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_AssocQueryCommand(const WCHAR *subj)
+_FX WCHAR *CobraSboxDll_AssocQueryCommand(const WCHAR *subj)
 {
-    WCHAR *cmd = SbieDll_AssocQueryCommandInternal(subj, L"open");
+    WCHAR *cmd = CobraSboxDll_AssocQueryCommandInternal(subj, L"open");
     if (! cmd)
-        cmd = SbieDll_AssocQueryCommandInternal(subj, L"cplopen");
+        cmd = CobraSboxDll_AssocQueryCommandInternal(subj, L"cplopen");
     return cmd;
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_AssocQueryProgram
+// CobraSboxDll_AssocQueryProgram
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_AssocQueryProgram(const WCHAR *subj)
+_FX WCHAR *CobraSboxDll_AssocQueryProgram(const WCHAR *subj)
 {
     WCHAR *cmd, *buf;
     WCHAR *ptr, *ptr2;
     WCHAR ch;
     ULONG len;
 
-    cmd = SbieDll_AssocQueryCommand(subj);
+    cmd = CobraSboxDll_AssocQueryCommand(subj);
     if (! cmd)
         return NULL;
 
@@ -1678,7 +1678,7 @@ _FX BOOLEAN SH32_Init_ZipFldr(HMODULE module)
     RouteTheCall = (P_RouteTheCall) GetProcAddress(module, "RouteTheCall");
     if (RouteTheCall) {
 
-        SBIEDLL_HOOK(SH32_,RouteTheCall);
+        CobraSboxDll_HOOK(SH32_,RouteTheCall);
     }
 
     return TRUE;
@@ -1720,7 +1720,7 @@ _FX BOOLEAN SH32_Init_UxTheme(HMODULE module)
 
         if (SetWindowThemeAttribute) {
 
-            SBIEDLL_HOOK(SH32_,SetWindowThemeAttribute);
+            CobraSboxDll_HOOK(SH32_,SetWindowThemeAttribute);
         }
     }
 

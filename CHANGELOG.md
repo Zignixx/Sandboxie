@@ -236,7 +236,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - moved SeparateUserFolders checkbox from global settings to per box options
 
 ### fixed
-- resolved SbieDll.dll incompatibility with shadow stack and enabled /CETCOMPAT for SbieDll.dll [#2559](https://github.com/sandboxie-plus/Sandboxie/issues/2559)
+- resolved CobraSboxDll.dll incompatibility with shadow stack and enabled /CETCOMPAT for CobraSboxDll.dll [#2559](https://github.com/sandboxie-plus/Sandboxie/issues/2559)
 - added missing registry hooks to improve compatibility with newer applications
 - fixed permission issue with registry entries in privacy mode boxes
 
@@ -473,7 +473,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - ported SbieDrv for ARM64
   - ported low-level injection mechanism for ARM64/ARM64EC
   - ported syscall hooks for ARM64/ARM64EC
-  - ported SbieDll.dll to ARM64/ARM64EC
+  - ported CobraSboxDll.dll to ARM64/ARM64EC
   - Note: ARM32 on ARM64 is not implemented and will terminate with message SBIE2338
   - Note: when Sandboxie is running, it disables the use of CHPE binaries for x86 processes globally - as required for the forced process functionality. This can be disabled by adding the global option "DisableCHPE=n" to the Sandboxie.ini, which will terminate x86 processes started outside the sandbox with message SBIE2338, instead of being forced
 
@@ -884,7 +884,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - fixed issues with box grouping [#1921](https://github.com/sandboxie-plus/Sandboxie/issues/1921) [#1920](https://github.com/sandboxie-plus/Sandboxie/issues/1920)
 - fixed issues when changing language [#1914](https://github.com/sandboxie-plus/Sandboxie/issues/1914)
 - fixed issue with BreakoutFolder [#1908](https://github.com/sandboxie-plus/Sandboxie/issues/1908)
-- fixed issue with SbieDll.dll for x86 exception handling
+- fixed issue with CobraSboxDll.dll for x86 exception handling
 - fixed issues with application-specific hives (RegLoadAppKey) affecting Visual Studio [#1576](https://github.com/sandboxie-plus/Sandboxie/issues/1576) [#1452](https://github.com/sandboxie-plus/Sandboxie/issues/1452)
 
 
@@ -1281,7 +1281,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - added template support for Osiris and Slimjet browsers (by Dyras) [#1454](https://github.com/sandboxie-plus/Sandboxie/pull/1454)
 
 ### Changed
-- improved SbieDll initialization
+- improved CobraSboxDll initialization
 - doubled size of Name_Buffer_Depth [#1342](https://github.com/sandboxie-plus/Sandboxie/issues/1342)
 - improved text filter in the templates view [#1456](https://github.com/sandboxie-plus/Sandboxie/issues/1456)
 
@@ -1965,7 +1965,7 @@ Fixed issue with Windows 7
 - fixed issue with Vivaldi browser [#821](https://github.com/sandboxie-plus/Sandboxie/issues/821)
 - fixed some issues with box options in the Plus UI [#879](https://github.com/sandboxie-plus/Sandboxie/issues/879)
 - fixed some issues with hardware acceleration in Chromium based browsers [#795](https://github.com/sandboxie-plus/Sandboxie/issues/795)
-- the "Stop All" command now issues "KmdUtil scandll" first to solve issues when the SbieDll.dll is in use
+- the "Stop All" command now issues "KmdUtil scandll" first to solve issues when the CobraSboxDll.dll is in use
 - workaround for Electron apps, by forcing an additional command line argument on the GPU renderer process [#547](https://github.com/sandboxie-plus/Sandboxie/issues/547) [#310](https://github.com/sandboxie-plus/Sandboxie/issues/310) [#215](https://github.com/sandboxie-plus/Sandboxie/issues/215)
 - fixed issue with Software Compatibility tab that doesn't always show template names correctly [#774](https://github.com/sandboxie-plus/Sandboxie/issues/774)
 
@@ -2458,7 +2458,7 @@ Fixed issue with Windows 7
 - terminated boxed processes are now kept listed for a couple of seconds
 - reworked sandbox deletion mechanism of the new UI
 - restructured sandbox options window
-- SbieDLL.dll can now be compiled with an up to date ntdll.lib (Thanks to TechLord from Team-IRA for help)
+- CobraSboxDll.dll can now be compiled with an up to date ntdll.lib (Thanks to TechLord from Team-IRA for help)
 - improved automated driver self repair
 
 ### Fixed
@@ -2511,7 +2511,7 @@ Fixed issue with Windows 7
 - fixed disabling of internet block from the presets menu sometimes failed
 - the software compatibility list in the SandMan UI now shows the proper template names
 - fixed use of freed memory in the driver
-- replaced swprintf with snwprintf to prevent potential buffer overflow in SbieDll.dll
+- replaced swprintf with snwprintf to prevent potential buffer overflow in CobraSboxDll.dll
 - fixed bad list performance with resource log and API log in SandMan UI
 
 
@@ -2522,8 +2522,8 @@ Fixed issue with Windows 7
 - added SbieLdr (experimental)
 
 ### Changed
-- moved code injection mechanism from SbieSvc to SbieDll
-- moved function hooking mechanism from SbieDrv to SbieDll
+- moved code injection mechanism from SbieSvc to CobraSboxDll
+- moved function hooking mechanism from SbieDrv to CobraSboxDll
 - introduced a new driverless method to resolve wow64 ntdll base address
 
 ### removed
@@ -2700,7 +2700,7 @@ Fixed issue with Windows 7
   - Note: using these options weakens the sandboxing, they are intended for debugging and may be used for better application virtualization later
 
 ### Changed
-- SbieDll.dll when processing InjectDll now looks in the SbieHome folder for the DLLs if the entered path starts with a backslash
+- CobraSboxDll.dll when processing InjectDll now looks in the SbieHome folder for the DLLs if the entered path starts with a backslash
   - i.e. "InjectDll=\LogAPI\i386\logapi32v.dll" or "InjectDll64=\LogAPI\amd64\logapi64v.dll"
 
 ### Fixed

@@ -447,7 +447,7 @@ _FX void File_InitSnapshots(void)
 	WCHAR SnapshotsIni[MAX_PATH] = { 0 };
 	wcscpy(SnapshotsIni, Dll_BoxFilePath);
 	wcscat(SnapshotsIni, L"\\Snapshots.ini");
-	SbieDll_TranslateNtToDosPath(SnapshotsIni);
+	CobraSboxDll_TranslateNtToDosPath(SnapshotsIni);
 
 	WCHAR Snapshot[FILE_MAX_SNAPSHOT_ID] = { 0 };
 	GetPrivateProfileStringW(L"Current", L"Snapshot", L"", Snapshot, FILE_MAX_SNAPSHOT_ID, SnapshotsIni);

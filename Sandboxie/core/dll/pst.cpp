@@ -85,7 +85,7 @@ extern "C" _FX BOOLEAN Pst_Init(HMODULE module)
     // if OpenProtectedStorage is specified, don't hook anything
     //
 
-    ULONG mp_flags = SbieDll_MatchPath(L'i', L"\\RPC Control\\protected_storage");
+    ULONG mp_flags = CobraSboxDll_MatchPath(L'i', L"\\RPC Control\\protected_storage");
     if (PATH_IS_OPEN(mp_flags))
         return TRUE;
 
@@ -103,18 +103,18 @@ extern "C" _FX BOOLEAN Pst_Init(HMODULE module)
     PStoreCreateInstance = (P_PStoreCreateInstance)
         GetProcAddress(module, Pst_PStoreCreateInstanceProcName);
 
-    SBIEDLL_HOOK(Pst_,PStoreCreateInstance)
+    CobraSboxDll_HOOK(Pst_,PStoreCreateInstance)
 
     return TRUE;
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_InitPStore
+// CobraSboxDll_InitPStore
 //---------------------------------------------------------------------------
 
 
-extern "C" void *SbieDll_InitPStore(void)
+extern "C" void *CobraSboxDll_InitPStore(void)
 {
     static const WCHAR *_pstorec = L"pstorec.dll";
     void *pst = NULL;

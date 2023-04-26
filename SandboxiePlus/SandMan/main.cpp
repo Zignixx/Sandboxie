@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
 	//InitConsole(false);
 
-	bool IsBoxed = GetModuleHandle(L"SbieDll.dll") != NULL;
+	bool IsBoxed = GetModuleHandle(L"CobraSboxDll.dll") != NULL;
 
 	if (!IsBoxed) {
 		SB_STATUS Status = CSbieUtils::DoAssist();

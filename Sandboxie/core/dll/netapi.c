@@ -83,7 +83,7 @@ _FX BOOLEAN HNet_Init(HMODULE module)
         GetProcAddress(module, "IcfOpenDynamicFwPort");
 
     if (IcfOpenDynamicFwPort) {
-        SBIEDLL_HOOK(HNet_,IcfOpenDynamicFwPort);
+        CobraSboxDll_HOOK(HNet_,IcfOpenDynamicFwPort);
     }
 
     return TRUE;
@@ -197,7 +197,7 @@ _FX BOOLEAN NetApi_Hook_NetUseAdd(HMODULE module)
     if (1) {
 
         extern const WCHAR *File_Mup;
-        ULONG mp_flags = SbieDll_MatchPath(L'f', File_Mup);
+        ULONG mp_flags = CobraSboxDll_MatchPath(L'f', File_Mup);
         if (PATH_IS_CLOSED(mp_flags))
             return TRUE;
     }
@@ -216,7 +216,7 @@ _FX BOOLEAN NetApi_Hook_NetUseAdd(HMODULE module)
     NetUseAdd = (P_NetUseAdd)GetProcAddress(module, "NetUseAdd");
     if (NetUseAdd) {
         P_NetUseAdd __sys_NetUseAdd;
-        SBIEDLL_HOOK(NetApi_,NetUseAdd);
+        CobraSboxDll_HOOK(NetApi_,NetUseAdd);
     }
 
     return TRUE;
@@ -354,7 +354,7 @@ _FX ULONG NetApi_NetUseAdd(
             drive_number = (drive_letter - L'A');
     }
 
-    rpl = (NETAPI_USE_ADD_RPL *)SbieDll_CallServer(&req->h);
+    rpl = (NETAPI_USE_ADD_RPL *)CobraSboxDll_CallServer(&req->h);
 
     Dll_Free(req);
 
@@ -369,7 +369,7 @@ _FX ULONG NetApi_NetUseAdd(
     }
 
     if ((! err) && drive_number)
-        SbieDll_DeviceChange(0xAA00 + drive_number, tzuk);
+        CobraSboxDll_DeviceChange(0xAA00 + drive_number, tzuk);
 
     return err;
 
@@ -455,8 +455,8 @@ ALIGNED BOOLEAN NetApi_Init(HMODULE module)
     NetWkstaGetInfo  = GetProcAddress(module, "NetWkstaGetInfo");
     NetServerGetInfo = GetProcAddress(module, "NetServerGetInfo");
 
-    SBIEDLL_HOOK(NetApi_,NetWkstaGetInfo);
-    SBIEDLL_HOOK(NetApi_,NetServerGetInfo);
+    CobraSboxDll_HOOK(NetApi_,NetWkstaGetInfo);
+    CobraSboxDll_HOOK(NetApi_,NetServerGetInfo);
 
     return TRUE;
 }
@@ -492,7 +492,7 @@ ALIGNED ULONG NetApi_NetWkstaGetInfo(
         wcscpy(req->name, servername);
 
     rpl = (NETAPI_WKSTA_GET_INFO_RPL *)
-                SbieDll_CallServer((MSG_HEADER *)req);
+                CobraSboxDll_CallServer((MSG_HEADER *)req);
     Dll_Free(req);
 
     if (! rpl)
@@ -540,7 +540,7 @@ ALIGNED ULONG NetApi_NetServerGetInfo(
         wcscpy(req->name, servername);
 
     rpl = (NETAPI_SERVER_GET_INFO_RPL *)
-                SbieDll_CallServer((MSG_HEADER *)req);
+                CobraSboxDll_CallServer((MSG_HEADER *)req);
     Dll_Free(req);
 
     if (! rpl)
@@ -602,7 +602,7 @@ ALIGNED BOOLEAN Lsa_Init_NetApi(HMODULE module)
     I_NetlogonGetTrustRid = (P_I_NetlogonGetTrustRid)
         GetProcAddress(module, "I_NetlogonGetTrustRid");
 
-    SBIEDLL_HOOK(Lsa_,I_NetlogonGetTrustRid);
+    CobraSboxDll_HOOK(Lsa_,I_NetlogonGetTrustRid);
 
     return TRUE;
 }

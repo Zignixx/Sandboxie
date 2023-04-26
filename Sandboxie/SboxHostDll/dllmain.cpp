@@ -23,11 +23,11 @@ using namespace std;
 
 HANDLE  g_hInjectedGlobalNameObj = NULL;
 
-BOOLEAN InitHook( HINSTANCE hSbieDll );
+BOOLEAN InitHook( HINSTANCE hCobraSboxDll );
 
-extern "C" __declspec(dllexport) void InjectDllMain(HINSTANCE hSbieDll, ULONG_PTR UnusedParameter)
+extern "C" __declspec(dllexport) void InjectDllMain(HINSTANCE hCobraSboxDll, ULONG_PTR UnusedParameter)
 {
-    InitHook(hSbieDll);
+    InitHook(hCobraSboxDll);
 }
 
 

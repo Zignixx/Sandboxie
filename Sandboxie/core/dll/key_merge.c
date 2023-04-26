@@ -344,7 +344,7 @@ _FX NTSTATUS Key_OpenForMerge(
     // check for open and closed paths
     //
 
-    mp_flags = SbieDll_MatchPath(L'k', TruePath);
+    mp_flags = CobraSboxDll_MatchPath(L'k', TruePath);
 
     if (PATH_IS_CLOSED(mp_flags))
         return STATUS_ACCESS_DENIED;
@@ -572,7 +572,7 @@ _FX BOOLEAN Key_ShouldNotMerge(const WCHAR *TruePath, const WCHAR *CopyPath)
         else
             HaveHkcuDomainsKey = TRUE;
 
-        rpl = SbieDll_CallServer((MSG_HEADER *)req);
+        rpl = CobraSboxDll_CallServer((MSG_HEADER *)req);
         Dll_Free(req);
         if (rpl) {
 
@@ -727,7 +727,7 @@ _FX NTSTATUS Key_MergeCacheDummys(KEY_MERGE *merge, const WCHAR *TruePath)
     //
 
     LIST* lists[4];
-    SbieDll_GetReadablePaths(L'k', lists);
+    CobraSboxDll_GetReadablePaths(L'k', lists);
 
     ULONG TruePathLen = wcslen(TruePath);
     if (TruePathLen > 1 && TruePath[TruePathLen - 1] == L'\\')
@@ -819,7 +819,7 @@ _FX NTSTATUS Key_MergeCacheDummys(KEY_MERGE *merge, const WCHAR *TruePath)
         }
     }
 
-    SbieDll_ReleaseFilePathLock();
+    CobraSboxDll_ReleaseFilePathLock();
 
     return STATUS_SUCCESS;
 }

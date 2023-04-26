@@ -461,7 +461,7 @@ SBIE1202 Ei voi p‰ivitt‰‰ lisenssitietoa:  %2
 .
 
 1214;pop;err;01
-SBIE1214 Ei voi injektoida SbieDll %2
+SBIE1214 Ei voi injektoida CobraSboxDll %2
 .
 
 1215;pop;err;01

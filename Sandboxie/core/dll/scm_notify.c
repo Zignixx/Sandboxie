@@ -140,8 +140,8 @@ _FX BOOLEAN Scm_Notify_Init(HMODULE module)
 
     SCM_IMPORT_AW(NotifyServiceStatusChange);
 
-    SBIEDLL_HOOK_SCM(NotifyServiceStatusChangeA);
-    SBIEDLL_HOOK_SCM(NotifyServiceStatusChangeW);
+    CobraSboxDll_HOOK_SCM(NotifyServiceStatusChangeA);
+    CobraSboxDll_HOOK_SCM(NotifyServiceStatusChangeW);
 
     return TRUE;
 }

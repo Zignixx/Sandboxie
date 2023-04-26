@@ -60,8 +60,8 @@ _FX BOOLEAN Pdh_Init(HMODULE module)
     if (PdhLookupPerfNameByIndexW == NULL)
         return FALSE;
 
-    SBIEDLL_HOOK(Pdh_, PdhConnectMachineW);
-    SBIEDLL_HOOK(Pdh_, PdhLookupPerfNameByIndexW);
+    CobraSboxDll_HOOK(Pdh_, PdhConnectMachineW);
+    CobraSboxDll_HOOK(Pdh_, PdhLookupPerfNameByIndexW);
     return TRUE;
 }
 

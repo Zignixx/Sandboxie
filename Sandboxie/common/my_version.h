@@ -57,7 +57,7 @@
 
 #define START_EXE               L"Start.exe"
 
-#define SBIEDLL                 L"SbieDll"
+#define CobraSboxDll                 L"CobraSboxDll"
 
 #define SBIEMSG_DLL             L"SbieMsg.dll"
 #define SBIE_IN_MSGS            L"SBIE"

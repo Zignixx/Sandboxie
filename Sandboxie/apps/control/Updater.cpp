@@ -262,7 +262,7 @@ BOOLEAN CUpdater::QueryUpdateData(UPDATER_DATA* Context)
 #else
 		L"i386",
 #endif
-		SbieDll_GetLanguage(NULL), Context->Manual ? L"0" : L"1");
+		CobraSboxDll_GetLanguage(NULL), Context->Manual ? L"0" : L"1");
 
 	CString update_key;
 	CSbieIni::GetInstance().GetText(_GlobalSettings, L"UpdateKey", update_key);

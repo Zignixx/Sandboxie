@@ -17,11 +17,11 @@
  */
 
 //---------------------------------------------------------------------------
-// Support Functions for Programs Using SbieDll
+// Support Functions for Programs Using CobraSboxDll
 //---------------------------------------------------------------------------
 
 
-#ifndef SBIEDLL_FORMATMESSAGE_ONLY
+#ifndef CobraSboxDll_FORMATMESSAGE_ONLY
 
 
 #include <stdio.h>
@@ -39,7 +39,7 @@
 //---------------------------------------------------------------------------
 
 
-static void SbieDll_SetStartError(ULONG Level);
+static void CobraSboxDll_SetStartError(ULONG Level);
 
 
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ static void SbieDll_SetStartError(ULONG Level);
 //---------------------------------------------------------------------------
 
 
-static WCHAR *SbieDll_StartError = NULL;
+static WCHAR *CobraSboxDll_StartError = NULL;
 
 const WCHAR *Support_SbieSvcKeyPath =
     L"\\registry\\machine\\system\\currentcontrolset\\services\\" SBIESVC;
@@ -55,11 +55,11 @@ const WCHAR *Support_SbieSvcKeyPath =
 
 
 //---------------------------------------------------------------------------
-// SbieDll_SetStartError
+// CobraSboxDll_SetStartError
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_SetStartError(ULONG Level)
+_FX void CobraSboxDll_SetStartError(ULONG Level)
 {
     ULONG ErrorCode = GetLastError();
 
@@ -70,9 +70,9 @@ _FX void SbieDll_SetStartError(ULONG Level)
 
 	size_t len;
 
-    if (SbieDll_StartError) {
-        Dll_Free(SbieDll_StartError);
-        SbieDll_StartError = NULL;
+    if (CobraSboxDll_StartError) {
+        Dll_Free(CobraSboxDll_StartError);
+        CobraSboxDll_StartError = NULL;
     }
 
     FormatMessage(FormatFlags, NULL, ErrorCode,
@@ -80,9 +80,9 @@ _FX void SbieDll_SetStartError(ULONG Level)
                   (LPTSTR)&ErrorText, 0, NULL);
 
 	len = (wcslen(ErrorText) + 32);
-    SbieDll_StartError = Dll_Alloc(len * sizeof(WCHAR));
+    CobraSboxDll_StartError = Dll_Alloc(len * sizeof(WCHAR));
 
-    Sbie_snwprintf(SbieDll_StartError, len,
+    Sbie_snwprintf(CobraSboxDll_StartError, len,
              L"[%02X / %d] %s", Level, ErrorCode, ErrorText);
 
     LocalFree(ErrorText);
@@ -90,22 +90,22 @@ _FX void SbieDll_SetStartError(ULONG Level)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetStartError
+// CobraSboxDll_GetStartError
 //---------------------------------------------------------------------------
 
 
-_FX const WCHAR *SbieDll_GetStartError(void)
+_FX const WCHAR *CobraSboxDll_GetStartError(void)
 {
-    return SbieDll_StartError;
+    return CobraSboxDll_StartError;
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_StartSbieSvc
+// CobraSboxDll_StartSbieSvc
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_StartSbieSvc(BOOLEAN retry)
+_FX BOOLEAN CobraSboxDll_StartSbieSvc(BOOLEAN retry)
 {
     typedef void *(*P_OpenSCManager)(void *p1, void *p2, ULONG acc);
     typedef void *(*P_OpenService)(void *hSCM, void *name, ULONG acc);
@@ -138,7 +138,7 @@ _FX BOOLEAN SbieDll_StartSbieSvc(BOOLEAN retry)
 
         req.h.length = sizeof(SBIE_INI_GET_VERSION_REQ);
         req.h.msgid = MSGID_SBIE_INI_GET_VERSION;
-        rpl = (SBIE_INI_GET_VERSION_RPL *)SbieDll_CallServer(&req.h);
+        rpl = (SBIE_INI_GET_VERSION_RPL *)CobraSboxDll_CallServer(&req.h);
         if (rpl) {
             Dll_Free(rpl);
             return TRUE;
@@ -151,7 +151,7 @@ _FX BOOLEAN SbieDll_StartSbieSvc(BOOLEAN retry)
 
                 hScm = pOpenSCManagerW(NULL, NULL, GENERIC_READ);
                 if (! hScm)
-                    SbieDll_SetStartError(0x11);
+                    CobraSboxDll_SetStartError(0x11);
             }
 
             if (hScm) {
@@ -161,7 +161,7 @@ _FX BOOLEAN SbieDll_StartSbieSvc(BOOLEAN retry)
 
                     hSvc = pOpenServiceW(hScm, SBIESVC, SERVICE_START);
                     if (! hSvc)
-                        SbieDll_SetStartError(0x22);
+                        CobraSboxDll_SetStartError(0x22);
 
                 } if (hSvc) {
 
@@ -175,7 +175,7 @@ _FX BOOLEAN SbieDll_StartSbieSvc(BOOLEAN retry)
                             ok = TRUE;*/
 
                         if (! ok)
-                            SbieDll_SetStartError(0x33);
+                            CobraSboxDll_SetStartError(0x33);
                     }
 
                     pCloseServiceHandle(hSvc);
@@ -213,11 +213,11 @@ _FX int Dll_NlsStrCmp(const WCHAR *s1, const WCHAR *s2, ULONG len)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetServiceRegistryValue
+// CobraSboxDll_GetServiceRegistryValue
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_GetServiceRegistryValue(
+_FX BOOLEAN CobraSboxDll_GetServiceRegistryValue(
     const WCHAR *name, void *kvpi, ULONG sizeof_kvpi)
 {
     NTSTATUS status;
@@ -251,11 +251,11 @@ _FX BOOLEAN SbieDll_GetServiceRegistryValue(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetLanguage
+// CobraSboxDll_GetLanguage
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_GetLanguage(BOOLEAN *rtl)
+_FX ULONG CobraSboxDll_GetLanguage(BOOLEAN *rtl)
 {
     static ULONG lang = 0;
     union {
@@ -267,7 +267,7 @@ _FX ULONG SbieDll_GetLanguage(BOOLEAN *rtl)
 
         lang = 1033;                            // default English
 
-        if (SbieDll_GetServiceRegistryValue(
+        if (CobraSboxDll_GetServiceRegistryValue(
                 L"Language", &u.info, sizeof(u))) {
 
             if (u.info.Type == REG_DWORD &&
@@ -324,11 +324,11 @@ _FX ULONG SbieDll_GetLanguage(BOOLEAN *rtl)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_KillOne
+// CobraSboxDll_KillOne
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_KillOne(ULONG ProcessId)
+_FX BOOLEAN CobraSboxDll_KillOne(ULONG ProcessId)
 {
     PROCESS_KILL_ONE_REQ req;
     MSG_HEADER *rpl;
@@ -338,7 +338,7 @@ _FX BOOLEAN SbieDll_KillOne(ULONG ProcessId)
     req.h.msgid = MSGID_PROCESS_KILL_ONE;
     req.pid = ProcessId;
 
-    rpl = SbieDll_CallServer(&req.h);
+    rpl = CobraSboxDll_CallServer(&req.h);
 
     if (rpl) {
         if (rpl->status == 0)
@@ -351,11 +351,11 @@ _FX BOOLEAN SbieDll_KillOne(ULONG ProcessId)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_KillAll
+// CobraSboxDll_KillAll
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_KillAll(ULONG SessionId, const WCHAR *BoxName)
+_FX BOOLEAN CobraSboxDll_KillAll(ULONG SessionId, const WCHAR *BoxName)
 {
     PROCESS_KILL_ALL_REQ req;
     MSG_HEADER *rpl;
@@ -366,7 +366,7 @@ _FX BOOLEAN SbieDll_KillAll(ULONG SessionId, const WCHAR *BoxName)
     req.session_id = SessionId;
     wcscpy(req.boxname, BoxName ? BoxName : Dll_BoxName);
 
-    rpl = SbieDll_CallServer(&req.h);
+    rpl = CobraSboxDll_CallServer(&req.h);
 
     if (rpl) {
         if (rpl->status == 0)
@@ -484,11 +484,11 @@ _FX NTSTATUS Dll_GetCurrentSidString(UNICODE_STRING *SidString)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetTokenElevationType
+// CobraSboxDll_GetTokenElevationType
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_GetTokenElevationType(void)
+_FX ULONG CobraSboxDll_GetTokenElevationType(void)
 {
     static BOOLEAN AlreadyChecked = FALSE;
     static ULONG   CachedResult   = TokenElevationTypeNone;
@@ -638,17 +638,17 @@ static UCHAR Support_BuiltinDomainRid[12] = {
 //---------------------------------------------------------------------------
 
 
-#endif  /* SBIEDLL_FORMATMESSAGE_ONLY */
+#endif  /* CobraSboxDll_FORMATMESSAGE_ONLY */
 
 #if 1
 
 //---------------------------------------------------------------------------
-// SbieDll_FormatMessage_2
+// CobraSboxDll_FormatMessage_2
 //---------------------------------------------------------------------------
 
 extern int __CRTDECL Sbie_snwprintf(wchar_t *_Buffer, size_t Count, const wchar_t * const _Format, ...);
 
-_FX ULONG SbieDll_FormatMessage_2(WCHAR **text_ptr, const WCHAR **ins)
+_FX ULONG CobraSboxDll_FormatMessage_2(WCHAR **text_ptr, const WCHAR **ins)
 {
     //
     // for right-to-left language text files (Hebrew and Arabic),
@@ -711,11 +711,11 @@ _FX ULONG SbieDll_FormatMessage_2(WCHAR **text_ptr, const WCHAR **ins)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FormatMessage
+// CobraSboxDll_FormatMessage
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_FormatMessage(ULONG code, const WCHAR **ins)
+_FX WCHAR *CobraSboxDll_FormatMessage(ULONG code, const WCHAR **ins)
 {
     static HMODULE SbieMsgDll   = NULL;
     const ULONG FormatFlags     = FORMAT_MESSAGE_FROM_HMODULE |
@@ -731,10 +731,10 @@ _FX WCHAR *SbieDll_FormatMessage(ULONG code, const WCHAR **ins)
 
     if (! SbieMsgDll) {
 
-#ifndef SBIEDLL_FORMATMESSAGE_ONLY
+#ifndef CobraSboxDll_FORMATMESSAGE_ONLY
 
         STARTUPINFOW si;
-        if (SbieDll_RunFromHome(SBIEMSG_DLL, NULL, &si, NULL)) {
+        if (CobraSboxDll_RunFromHome(SBIEMSG_DLL, NULL, &si, NULL)) {
             WCHAR *path2 = (WCHAR *)si.lpReserved;
             SbieMsgDll =
                 LoadLibraryEx(path2, NULL, LOAD_LIBRARY_AS_DATAFILE);
@@ -756,9 +756,9 @@ _FX WCHAR *SbieDll_FormatMessage(ULONG code, const WCHAR **ins)
 
 #else
 
-        SBIEDLL_GET_SBIE_MSG_DLL
+        CobraSboxDll_GET_SBIE_MSG_DLL
 
-#endif  /* SBIEDLL_FORMATMESSAGE_ONLY */
+#endif  /* CobraSboxDll_FORMATMESSAGE_ONLY */
     }
 
     //
@@ -771,10 +771,10 @@ _FX WCHAR *SbieDll_FormatMessage(ULONG code, const WCHAR **ins)
     if (SbieMsgDll) {
 
         rc = FormatMessage(FormatFlags, SbieMsgDll, code,
-                           SbieDll_GetLanguage(NULL),
+                           CobraSboxDll_GetLanguage(NULL),
                            (LPWSTR)&out, 4, (va_list *)ins);
         if (rc != 0) {
-            ULONG xrc = SbieDll_FormatMessage_2(&out, ins);
+            ULONG xrc = CobraSboxDll_FormatMessage_2(&out, ins);
             if (xrc)
                 rc = xrc;
         }
@@ -811,52 +811,52 @@ _FX WCHAR *SbieDll_FormatMessage(ULONG code, const WCHAR **ins)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FormatMessage0
+// CobraSboxDll_FormatMessage0
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_FormatMessage0(ULONG code)
+_FX WCHAR *CobraSboxDll_FormatMessage0(ULONG code)
 {
-    return SbieDll_FormatMessage(code, NULL);
+    return CobraSboxDll_FormatMessage(code, NULL);
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FormatMessage1
+// CobraSboxDll_FormatMessage1
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_FormatMessage1(ULONG code, const WCHAR *ins1)
+_FX WCHAR *CobraSboxDll_FormatMessage1(ULONG code, const WCHAR *ins1)
 {
     const WCHAR *ins[6];
     memzero((WCHAR *)ins, sizeof(ins));
     ins[1] = (WCHAR *)ins1;
-    return SbieDll_FormatMessage(code, ins);
+    return CobraSboxDll_FormatMessage(code, ins);
 }
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FormatMessage2
+// CobraSboxDll_FormatMessage2
 //---------------------------------------------------------------------------
 
 
-_FX WCHAR *SbieDll_FormatMessage2(
+_FX WCHAR *CobraSboxDll_FormatMessage2(
     ULONG code, const WCHAR *ins1, const WCHAR *ins2)
 {
     const WCHAR *ins[6];
     memzero((WCHAR *)ins, sizeof(ins));
     ins[1] = ins1;
     ins[2] = ins2;
-    return SbieDll_FormatMessage(code, ins);
+    return CobraSboxDll_FormatMessage(code, ins);
 }
 
 #endif
 
 //---------------------------------------------------------------------------
-// SbieDll_IsReservedFileName
+// CobraSboxDll_IsReservedFileName
 //---------------------------------------------------------------------------
 
-_FX BOOLEAN SbieDll_IsReservedFileName(const WCHAR *name)
+_FX BOOLEAN CobraSboxDll_IsReservedFileName(const WCHAR *name)
 {
     static const WCHAR* deviceNames[] = {
         L"aux", L"clock$", L"con", L"nul", L"prn",

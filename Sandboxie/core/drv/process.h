@@ -121,7 +121,7 @@ struct _PROCESS {
 
     BOOLEAN forced_process;
 
-    BOOLEAN sbiedll_loaded;
+    BOOLEAN CobraSboxDll_loaded;
     BOOLEAN sbielow_loaded;
 
     BOOLEAN is_start_exe;

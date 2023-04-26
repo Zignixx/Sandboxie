@@ -287,7 +287,7 @@ _FX LONG my_RegQueryValueExW(
 
 _FX BOOL Start_WinSock(void)
 {
-    if (SbieDll_IsDllSkipHook(L"ws2_32.dll"))
+    if (CobraSboxDll_IsDllSkipHook(L"ws2_32.dll"))
         return TRUE;
 
     WORD wVersionRequested;
@@ -413,7 +413,7 @@ _FX int __stdcall WinMain(
         }
     }
 
-    if (!SbieDll_IsOpenCOM()) {
+    if (!CobraSboxDll_IsOpenCOM()) {
 
         Check_Windows_7();
 
@@ -471,7 +471,7 @@ _FX int __stdcall WinMain(
         MSG_HEADER req;
         req.length = sizeof(req);
         req.msgid = MSGID_SBIE_INI_RUN_SBIE_CTRL;
-        SbieDll_CallServer(&req);
+        CobraSboxDll_CallServer(&req);
     }
 
     return DoLingerLeader();

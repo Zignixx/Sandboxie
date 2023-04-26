@@ -153,19 +153,19 @@ _FX BOOLEAN Gui_InitProp(HMODULE module)
     // DisableComProxy BEGIN
     if (!SbieApi_QueryConfBool(NULL, L"DisableComProxy", FALSE))
     // DisableComProxy END
-    if (! SbieDll_IsOpenCOM()) {
+    if (! CobraSboxDll_IsOpenCOM()) {
 
         //
         // if there is access to the real COM epmapper, then don't
         // hook Prop functions that are used to hide drag/drop props
         //
 
-        SBIEDLL_HOOK_GUI(GetPropA);
-        SBIEDLL_HOOK_GUI(GetPropW);
-        SBIEDLL_HOOK_GUI(SetPropA);
-        SBIEDLL_HOOK_GUI(SetPropW);
-        SBIEDLL_HOOK_GUI(RemovePropA);
-        SBIEDLL_HOOK_GUI(RemovePropW);
+        CobraSboxDll_HOOK_GUI(GetPropA);
+        CobraSboxDll_HOOK_GUI(GetPropW);
+        CobraSboxDll_HOOK_GUI(SetPropA);
+        CobraSboxDll_HOOK_GUI(SetPropW);
+        CobraSboxDll_HOOK_GUI(RemovePropA);
+        CobraSboxDll_HOOK_GUI(RemovePropW);
     }
 
     if (! Gui_OpenAllWinClasses) {
@@ -174,19 +174,19 @@ _FX BOOLEAN Gui_InitProp(HMODULE module)
         // if not hooking window classes, don't install custom wndproc
         //
 
-        SBIEDLL_HOOK_GUI(GetWindowLongA);
-        SBIEDLL_HOOK_GUI(GetWindowLongW);
+        CobraSboxDll_HOOK_GUI(GetWindowLongA);
+        CobraSboxDll_HOOK_GUI(GetWindowLongW);
 
 #ifdef _WIN64
 
         if (Dll_OsBuild >= 14942) { // Windows 10 1703 preview #7
             HMODULE hWin32u = GetModuleHandleA("win32u.dll");
             __sys_SetWindowLong8 = (P_SetWindowLong8) GetProcAddress(hWin32u, "NtUserSetWindowLong");
-            SBIEDLL_HOOK_GUI(SetWindowLong8);
+            CobraSboxDll_HOOK_GUI(SetWindowLong8);
         }
         else if (Dll_OsBuild < 9600) {
-            SBIEDLL_HOOK_GUI(SetWindowLongA);
-            SBIEDLL_HOOK_GUI(SetWindowLongW);
+            CobraSboxDll_HOOK_GUI(SetWindowLongA);
+            CobraSboxDll_HOOK_GUI(SetWindowLongW);
 
         } 
         else
@@ -202,27 +202,27 @@ _FX BOOLEAN Gui_InitProp(HMODULE module)
 #else ! _WIN64
 
         // otherwise old style hooks on SetWindowLongA and SetWindowLongW
-        SBIEDLL_HOOK_GUI(SetWindowLongA);
-        SBIEDLL_HOOK_GUI(SetWindowLongW);
+        CobraSboxDll_HOOK_GUI(SetWindowLongA);
+        CobraSboxDll_HOOK_GUI(SetWindowLongW);
 
 #endif _WIN64
 
-        SBIEDLL_HOOK_GUI(GetClassLongA);
-        SBIEDLL_HOOK_GUI(GetClassLongW);
+        CobraSboxDll_HOOK_GUI(GetClassLongA);
+        CobraSboxDll_HOOK_GUI(GetClassLongW);
 
 #ifdef _WIN64
 
-        SBIEDLL_HOOK_GUI(GetWindowLongPtrA);
-        SBIEDLL_HOOK_GUI(GetWindowLongPtrW);
+        CobraSboxDll_HOOK_GUI(GetWindowLongPtrA);
+        CobraSboxDll_HOOK_GUI(GetWindowLongPtrW);
 
         if (Dll_OsBuild >= 14942) { // Windows 10 1703 preview #7
             HMODULE hWin32u = GetModuleHandleA("win32u.dll");
             __sys_SetWindowLongPtr8 = (P_SetWindowLongPtr8) GetProcAddress(hWin32u,"NtUserSetWindowLongPtr");
-            SBIEDLL_HOOK_GUI(SetWindowLongPtr8);
+            CobraSboxDll_HOOK_GUI(SetWindowLongPtr8);
         }
         else if (Dll_OsBuild < 8400) {
-            SBIEDLL_HOOK_GUI(SetWindowLongPtrA);
-            SBIEDLL_HOOK_GUI(SetWindowLongPtrW);
+            CobraSboxDll_HOOK_GUI(SetWindowLongPtrA);
+            CobraSboxDll_HOOK_GUI(SetWindowLongPtrW);
 
         } 
         else 
@@ -235,8 +235,8 @@ _FX BOOLEAN Gui_InitProp(HMODULE module)
             return FALSE;
         }
 
-        SBIEDLL_HOOK_GUI(GetClassLongPtrA);
-        SBIEDLL_HOOK_GUI(GetClassLongPtrW);
+        CobraSboxDll_HOOK_GUI(GetClassLongPtrA);
+        CobraSboxDll_HOOK_GUI(GetClassLongPtrW);
 
 #endif _WIN64
 
@@ -1109,7 +1109,7 @@ _FX BOOLEAN Gui_Hook_SetWindowLong8(HMODULE module)
 
             __sys_SetWindowLong8 = (P_SetWindowLong8)(w + 8 + w_offset);
 
-            SBIEDLL_HOOK_GUI(SetWindowLong8);
+            CobraSboxDll_HOOK_GUI(SetWindowLong8);
 
             return TRUE;
         }
@@ -1200,7 +1200,7 @@ _FX BOOLEAN Gui_Hook_SetWindowLongPtr8(HMODULE module)
             __sys_SetWindowLongPtr8 =
                                 (P_SetWindowLongPtr8)(w + 8 + w_offset);
 
-            SBIEDLL_HOOK_GUI(SetWindowLongPtr8);
+            CobraSboxDll_HOOK_GUI(SetWindowLongPtr8);
 
             return TRUE;
         }

@@ -275,10 +275,10 @@ _FX NTSTATUS Syscall_OpenHandle(
 
     //
     // During early process initializarion stage OpenDirectoryObject is invoked with DIRECTORY_ALL_ACCESS
-    // so we strip the "write" permissions here until the SbieDll finishes loading
+    // so we strip the "write" permissions here until the CobraSboxDll finishes loading
     //
 
-    if (strcmp(syscall_entry->name, "OpenDirectoryObject") == 0 && proc->ipc_namespace_isoaltion && !proc->sbiedll_loaded){
+    if (strcmp(syscall_entry->name, "OpenDirectoryObject") == 0 && proc->ipc_namespace_isoaltion && !proc->CobraSboxDll_loaded){
         ULONG_PTR PermissibleAccess = READ_CONTROL | DIRECTORY_QUERY | DIRECTORY_TRAVERSE;
         if (user_args[1] == MAXIMUM_ALLOWED)
             user_args[1] = PermissibleAccess;

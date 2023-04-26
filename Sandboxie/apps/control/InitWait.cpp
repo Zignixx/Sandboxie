@@ -117,7 +117,7 @@ CInitWait::CInitWait(CWinApp *myApp)
     // start SbieSvc
     //
 
-    SbieDll_StartSbieSvc(FALSE);
+    CobraSboxDll_StartSbieSvc(FALSE);
 
     //
     // temporary message loop while we initialize
@@ -168,11 +168,11 @@ void CInitWait::GetVersions()
         MSG_HEADER req;
         req.length = sizeof(MSG_HEADER);
         req.msgid = MSGID_PROCESS_CHECK_INIT_COMPLETE;
-        MSG_HEADER *rpl = SbieDll_CallServer(&req);
+        MSG_HEADER *rpl = CobraSboxDll_CallServer(&req);
         if (rpl) {
             if (rpl->status == 0)
                 init_complete = true;
-            SbieDll_FreeMem(rpl);
+            CobraSboxDll_FreeMem(rpl);
         }
         if (! init_complete)
             return;
@@ -185,7 +185,7 @@ void CInitWait::GetVersions()
         req.h.msgid = MSGID_SBIE_INI_GET_VERSION;
 
         SBIE_INI_GET_VERSION_RPL *rpl =
-            (SBIE_INI_GET_VERSION_RPL *)SbieDll_CallServer(&req.h);
+            (SBIE_INI_GET_VERSION_RPL *)CobraSboxDll_CallServer(&req.h);
         if (rpl) {
             if (rpl->h.status == 0 && rpl->version[0]) {
                 m_svc_ver = rpl->version;
@@ -193,7 +193,7 @@ void CInitWait::GetVersions()
                 if (m_svc_abi != MY_ABI_VERSION)
                     fail = TRUE;
             }
-            SbieDll_FreeMem(rpl);
+            CobraSboxDll_FreeMem(rpl);
         }
     }
 
@@ -255,7 +255,7 @@ void CInitWait::OnTimer(UINT_PTR nIDEvent)
         // on Windows Vista, elevate to start the service
         //
 
-        const WCHAR *StartError = SbieDll_GetStartError();
+        const WCHAR *StartError = CobraSboxDll_GetStartError();
         if (StartError && wcsstr(StartError, L"[22 / 5]")) {
 
             m_try_elevate = FALSE;

@@ -320,7 +320,7 @@ _FX void InitInject(SBIELOW_DATA *data, void *DetourCode)
 
     //
     // on ARM64EC we hook the native code hence we need the custom MyGetProcedureAddress
-    // to obtain the address of the native original 1 from our SbieDll.dll
+    // to obtain the address of the native original 1 from our CobraSboxDll.dll
     // instead of the FFS sequence as given by NtGetProcedureAddress
     //
 
@@ -392,20 +392,20 @@ _FX void InitInject(SBIELOW_DATA *data, void *DetourCode)
 #ifdef _M_ARM64
     if (data->flags.is_arm64ec) {
 
-        inject->SbieDll_Length = (SHORT)extra->Arm64ecSbieDll_length;
-        inject->SbieDll_MaxLen = inject->SbieDll_Length + sizeof(WCHAR);
-        inject->SbieDll_Buf64 =
-            (ULONG64)((ULONG_PTR)extra + extra->Arm64ecSbieDll_offset);
+        inject->CobraSboxDll_Length = (SHORT)extra->Arm64ecCobraSboxDll_length;
+        inject->CobraSboxDll_MaxLen = inject->CobraSboxDll_Length + sizeof(WCHAR);
+        inject->CobraSboxDll_Buf64 =
+            (ULONG64)((ULONG_PTR)extra + extra->Arm64ecCobraSboxDll_offset);
     }
     else
 #endif
     {
-        inject->SbieDll_Length = (SHORT)extra->NativeSbieDll_length;
-        inject->SbieDll_MaxLen = inject->SbieDll_Length + sizeof(WCHAR);
-        inject->SbieDll_Buf32  =
-            (ULONG)((ULONG_PTR)extra + extra->NativeSbieDll_offset);
-        inject->SbieDll_Buf64 =
-            (ULONG64)((ULONG_PTR)extra + extra->NativeSbieDll_offset);
+        inject->CobraSboxDll_Length = (SHORT)extra->NativeCobraSboxDll_length;
+        inject->CobraSboxDll_MaxLen = inject->CobraSboxDll_Length + sizeof(WCHAR);
+        inject->CobraSboxDll_Buf32  =
+            (ULONG)((ULONG_PTR)extra + extra->NativeCobraSboxDll_offset);
+        inject->CobraSboxDll_Buf64 =
+            (ULONG64)((ULONG_PTR)extra + extra->NativeCobraSboxDll_offset);
     }
 
 
@@ -540,10 +540,10 @@ _FX void InitInjectWow64(SBIELOW_DATA *data)
     // prepare unicode strings
     //
 
-    inject->SbieDll_Length = (SHORT)extra->Wow64SbieDll_length;
-    inject->SbieDll_MaxLen = inject->SbieDll_Length + sizeof(WCHAR);
-    inject->SbieDll_Buf32  =
-                    (ULONG)((ULONG_PTR)extra + extra->Wow64SbieDll_offset);
+    inject->CobraSboxDll_Length = (SHORT)extra->Wow64CobraSboxDll_length;
+    inject->CobraSboxDll_MaxLen = inject->CobraSboxDll_Length + sizeof(WCHAR);
+    inject->CobraSboxDll_Buf32  =
+                    (ULONG)((ULONG_PTR)extra + extra->Wow64CobraSboxDll_offset);
 
     //
     // the service fills INJECT_DATA.DetourCode_x86 with the right non native code

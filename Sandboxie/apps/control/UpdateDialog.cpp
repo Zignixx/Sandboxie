@@ -25,7 +25,7 @@
 #include "Updater.h"
 #include "common/CommonUtils.h"
 #include "common/MyMsg.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "UserSettings.h"
 
 //---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ CUpdateDialog::CUpdateDialog(CWnd *pParentWnd)
     m_lpszTemplateName = L"UPDATE_DIALOG";
 
     BOOLEAN LayoutRTL;
-    SbieDll_GetLanguage(&LayoutRTL);
+    CobraSboxDll_GetLanguage(&LayoutRTL);
     if (LayoutRTL) {
 
         m_DlgTmplCopy =

@@ -111,7 +111,7 @@ ULONG Dll_ImageType = DLL_IMAGE_UNSPECIFIED;
 ULONG Dll_OsBuild = 0;
 ULONG Dll_Windows = 0;
 
-const UCHAR *SbieDll_Version = MY_VERSION_STRING;
+const UCHAR *CobraSboxDll_Version = MY_VERSION_STRING;
 
 BOOLEAN Dll_SbieTrace = FALSE;
 
@@ -192,7 +192,7 @@ _FX BOOL WINAPI DllMain(
         ProcessIdToSessionId(GetCurrentProcessId(), &Dll_SessionId);
 
         Dll_InitGeneric(hInstance);
-        SbieDll_HookInit();
+        CobraSboxDll_HookInit();
 
     } else if (dwReason == DLL_PROCESS_DETACH) {
 
@@ -216,7 +216,7 @@ _FX BOOL WINAPI DllMain(
 _FX void Dll_InitGeneric(HINSTANCE hInstance)
 {
     //
-    // Dll_InitGeneric initializes SbieDll in a general way, suitable
+    // Dll_InitGeneric initializes CobraSboxDll in a general way, suitable
     // for a program which may or may not be in the sandbox
     //
 
@@ -272,7 +272,7 @@ _FX void Dll_InitInjected(void)
 
     Dll_ProcessId = (ULONG)(ULONG_PTR)GetCurrentProcessId();
 
-    status = SbieApi_QueryProcessEx2( // sets proc->sbiedll_loaded = TRUE; in the driver
+    status = SbieApi_QueryProcessEx2( // sets proc->CobraSboxDll_loaded = TRUE; in the driver
         (HANDLE)(ULONG_PTR)Dll_ProcessId, 255,
         Dll_BoxNameSpace, Dll_ImageNameSpace, Dll_SidStringSpace,
         &Dll_SessionId, NULL);
@@ -386,7 +386,7 @@ _FX void Dll_InitInjected(void)
 
 
 #ifdef WITH_DEBUG
-    if (SbieApi_QueryConfBool(NULL, L"DisableSbieDll", FALSE)) {
+    if (SbieApi_QueryConfBool(NULL, L"DisableCobraSboxDll", FALSE)) {
         Dll_InitComplete = TRUE;
         return;
     }
@@ -585,7 +585,7 @@ _FX void Dll_InitExeEntry(void)
     // start SandboxieRpcSs
     //
 
-    SbieDll_StartCOM(TRUE);
+    CobraSboxDll_StartCOM(TRUE);
 
     //
     // setup own top level exception handler
@@ -856,7 +856,7 @@ _FX ULONG_PTR Dll_Ordinal1(
     if (!bHostInject)
     {
         //
-        // SbieDll was already partially initialized in Dll_InitGeneric,
+        // CobraSboxDll was already partially initialized in Dll_InitGeneric,
         // complete the initialization for a sandboxed process
         //
         HANDLE heventProcessStart = 0;
@@ -889,7 +889,7 @@ _FX ULONG_PTR Dll_Ordinal1(
 
         else if (Dll_ProcessFlags & SBIE_FLAG_FORCED_PROCESS) {
             if (SbieApi_QueryConfBool(NULL, L"ForceRestartAll", FALSE)
-             || SbieDll_CheckStringInList(Dll_ImageName, NULL, L"ForceRestart"))
+             || CobraSboxDll_CheckStringInList(Dll_ImageName, NULL, L"ForceRestart"))
                 MustRestartProcess = 2;
         }
 
@@ -908,7 +908,7 @@ _FX ULONG_PTR Dll_Ordinal1(
         // explorer needs sandboxed COM show warning and terminate when COM is not sandboxies
         //
 
-        if (Dll_ImageType == DLL_IMAGE_SHELL_EXPLORER && SbieDll_IsOpenCOM()) {
+        if (Dll_ImageType == DLL_IMAGE_SHELL_EXPLORER && CobraSboxDll_IsOpenCOM()) {
 
             SbieApi_Log(2195, NULL);
             ExitProcess(0);
@@ -918,7 +918,7 @@ _FX ULONG_PTR Dll_Ordinal1(
         // msi installer requires COM to be sandboxed, else the installation will be done outside the sandbox
         //
 
-        if (Dll_ImageType == DLL_IMAGE_MSI_INSTALLER && SbieDll_IsOpenCOM()) {
+        if (Dll_ImageType == DLL_IMAGE_MSI_INSTALLER && CobraSboxDll_IsOpenCOM()) {
 
             SbieApi_Log(2196, NULL);
             ExitProcess(0);

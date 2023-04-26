@@ -72,7 +72,7 @@ _FX BOOLEAN MsCorEE_Init(HMODULE module)
 
     _CorExeMain = __sys__CorExeMain;
 
-    SBIEDLL_HOOK(MsCorEE_,_CorExeMain);
+    CobraSboxDll_HOOK(MsCorEE_,_CorExeMain);
     
     return TRUE;
 }

@@ -886,7 +886,7 @@ void CMyFrame::OnCmdConfEdit()
     shex.nShow = SW_SHOWNORMAL;
 
     shex.lpVerb = NULL;
-    if (SbieDll_GetTokenElevationType() != TokenElevationTypeNone)
+    if (CobraSboxDll_GetTokenElevationType() != TokenElevationTypeNone)
         shex.lpVerb = L"runas";
 
     if (! ShellExecuteEx(&shex))
@@ -1072,7 +1072,7 @@ extern "C" void OpenWebView(const WCHAR * url, const WCHAR * title);
 void CMyFrame::OnCmdHelpMigrate()
 {
     CString url;
-    url.Format(L"https://sandboxie-plus.com/go.php?to=sbie-migration&language=%d", SbieDll_GetLanguage(NULL));
+    url.Format(L"https://sandboxie-plus.com/go.php?to=sbie-migration&language=%d", CobraSboxDll_GetLanguage(NULL));
     CMyMsg text(MSG_3468);
     OpenWebView(url, text);
 }
@@ -1514,7 +1514,7 @@ void CMyFrame::OnCmdTerminateProcess()
 
     if (rv == IDYES) {
 
-        SbieDll_KillOne(pid);
+        CobraSboxDll_KillOne(pid);
         OnSetFocus(NULL);
     }
 }
@@ -1561,7 +1561,7 @@ BOOL CMyFrame::TerminateProcesses(CBox &box, BOOL warn)
         }
 
         if (rv == IDYES)
-            SbieDll_KillAll(-1, box.GetName());
+            CobraSboxDll_KillAll(-1, box.GetName());
         else
             abort = TRUE;
     }
@@ -2428,7 +2428,7 @@ void CMyFrame::OnDropFiles(HDROP hDrop)
 
 BOOL CMyFrame::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
-    SbieDll_DeviceChange(nEventType, dwData);
+    CobraSboxDll_DeviceChange(nEventType, dwData);
     return TRUE;
 }
 

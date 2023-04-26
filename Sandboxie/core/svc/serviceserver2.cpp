@@ -28,7 +28,7 @@
 #include "servicewire.h"
 #include "common/defines.h"
 #include "common/my_version.h"
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include <aclapi.h>
 #include "ProcessServer.h"
 
@@ -72,7 +72,7 @@ bool ServiceServer::CanCallerDoElevation(
             // not be started with a system token allow it to be start
             //
 
-            if (DropRights && SbieDll_GetSettingsForName_bool(boxname, exename, L"FakeAdminRights", FALSE))
+            if (DropRights && CobraSboxDll_GetSettingsForName_bool(boxname, exename, L"FakeAdminRights", FALSE))
                 DropRights = false;
 
             // 
@@ -80,7 +80,7 @@ bool ServiceServer::CanCallerDoElevation(
             // by SandboxieRpcSs.exe allow it to be started
             //
 
-            if (DropRights && SbieDll_CheckStringInList(ServiceName, boxname, L"StartService"))
+            if (DropRights && CobraSboxDll_CheckStringInList(ServiceName, boxname, L"StartService"))
                 DropRights = false;
         }
     }
@@ -224,7 +224,7 @@ WCHAR *ServiceServer::BuildPathForStartExe(
     si.lpReserved = NULL;
 
     WCHAR *OutPath = NULL;
-    if (SbieDll_RunFromHome(START_EXE, args, &si, NULL))
+    if (CobraSboxDll_RunFromHome(START_EXE, args, &si, NULL))
         OutPath = (WCHAR *)si.lpReserved;
 
     if (OutPath && OutArgs)
@@ -301,7 +301,7 @@ int ServiceServer::RunServiceAsSystem(const WCHAR* svcname, const WCHAR* boxname
         return 0;
 
     // check exception list
-    return SbieDll_CheckStringInList(svcname, boxname, L"RunServiceAsSystem") ? 1 : 0;
+    return CobraSboxDll_CheckStringInList(svcname, boxname, L"RunServiceAsSystem") ? 1 : 0;
 }
 
 
@@ -520,7 +520,7 @@ ULONG ServiceServer::UacHandler2(
             devmap);
 
         errlvl = 0x41;
-        if (SbieDll_RunFromHome(SBIESVC_EXE, cmdline, &si, NULL))
+        if (CobraSboxDll_RunFromHome(SBIESVC_EXE, cmdline, &si, NULL))
             ExePath = (WCHAR *)si.lpReserved;
         else {
             ok = FALSE;
@@ -828,7 +828,7 @@ void ServiceServer::RunUacSlave2(ULONG_PTR *ThreadArgs)
     ATOM atom = RegisterClassEx(&wc);
 
     BOOLEAN rtl;
-    SbieDll_GetLanguage(&rtl);
+    CobraSboxDll_GetLanguage(&rtl);
 
     HWND hWnd = CreateWindowEx(WS_EX_TOPMOST |
                                (rtl ? WS_EX_LAYOUTRTL : 0),
@@ -928,7 +928,7 @@ LRESULT ServiceServer::RunUacSlave2WndProc(
     int y = 10;
     y = RunUacSlave2WndProcTextOut(hdc, y, height, 3241);
 
-    WCHAR *txtSandbox = SbieDll_FormatMessage0(MSG_3742);
+    WCHAR *txtSandbox = CobraSboxDll_FormatMessage0(MSG_3742);
     y += 20 + height;
     TextOut(hdc, 10, y, txtSandbox, wcslen(txtSandbox));
     y += 5 + height;
@@ -936,7 +936,7 @@ LRESULT ServiceServer::RunUacSlave2WndProc(
     TextOut(hdc, 10, y, strings[0], wcslen(strings[0]));
     SetTextColor(hdc, 0x00FFFFFF);
 
-    WCHAR *txtProgram = SbieDll_FormatMessage0(MSG_3743);
+    WCHAR *txtProgram = CobraSboxDll_FormatMessage0(MSG_3743);
     y += 20 + height;
     TextOut(hdc, 10, y, txtProgram, wcslen(txtProgram));
     y += 5 + height;
@@ -981,7 +981,7 @@ int ServiceServer::RunUacSlave2WndProcTextOut(
     HDC hdc, int y, int height, int msgid)
 {
     WCHAR txt[512];
-    wcscpy(txt, SbieDll_FormatMessage0(msgid));
+    wcscpy(txt, CobraSboxDll_FormatMessage0(msgid));
     WCHAR *txt1 = txt;
     while (1) {
         WCHAR *txt2 = wcschr(txt1, L'\n');
@@ -1106,7 +1106,7 @@ ULONG ServiceServer::RunUacSlave2Thread2(void *lpParameters)
 typedef struct _SECURE_UAC_PACKET {
 
     //
-    // keep in sync with SbieDll / secure.c
+    // keep in sync with CobraSboxDll / secure.c
     //
 
     ULONG   tzuk;
@@ -1379,7 +1379,7 @@ bool ServiceServer::RunUacSlave4(
     //
     // elevation type 1:  create process and return process handle
     //
-    // note that SbieDll hooks RtlQueryElevationFlags in order to prevent
+    // note that CobraSboxDll hooks RtlQueryElevationFlags in order to prevent
     // a potential loop when dealing with EXEs that get auto elevation.
     // note also a similar behavior in Sxs_CheckManifestForCreateProcess.
     //
@@ -1438,7 +1438,7 @@ bool ServiceServer::CallUacDialogHook(
         return false;
 
     LONG_PTR ReturnCode = pUacDialog(
-                GetModuleHandle(SBIEDLL L".dll"),
+                GetModuleHandle(CobraSboxDll L".dll"),
                 (ULONG)(ULONG_PTR)idProcess, cmdline, isAdmin ? 1 : 0);
 
     if (ReturnCode == 1)        // allow elevation request

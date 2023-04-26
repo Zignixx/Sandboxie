@@ -194,20 +194,20 @@ _FX BOOLEAN Gui_InitEnum(HMODULE module)
 
         if (Gui_UseProxyService && !Dll_SkipHook(L"enumwin")) {
 
-            SBIEDLL_HOOK_GUI(EnumWindows);
-            SBIEDLL_HOOK_GUI(EnumChildWindows);
-            SBIEDLL_HOOK_GUI(EnumThreadWindows);
-            SBIEDLL_HOOK_GUI(EnumDesktopWindows);
+            CobraSboxDll_HOOK_GUI(EnumWindows);
+            CobraSboxDll_HOOK_GUI(EnumChildWindows);
+            CobraSboxDll_HOOK_GUI(EnumThreadWindows);
+            CobraSboxDll_HOOK_GUI(EnumDesktopWindows);
         }
 
         if (!Dll_SkipHook(L"findwin")) {
 
-            SBIEDLL_HOOK_GUI(FindWindowA);
-            SBIEDLL_HOOK_GUI(FindWindowW);
-            SBIEDLL_HOOK_GUI(FindWindowExA);
-            SBIEDLL_HOOK_GUI(FindWindowExW);
+            CobraSboxDll_HOOK_GUI(FindWindowA);
+            CobraSboxDll_HOOK_GUI(FindWindowW);
+            CobraSboxDll_HOOK_GUI(FindWindowExA);
+            CobraSboxDll_HOOK_GUI(FindWindowExW);
 
-            SBIEDLL_HOOK_GUI(GetShellWindow);
+            CobraSboxDll_HOOK_GUI(GetShellWindow);
         }
 
     } else {
@@ -221,7 +221,7 @@ _FX BOOLEAN Gui_InitEnum(HMODULE module)
 
         if (Dll_ImageType == DLL_IMAGE_SHELL_EXPLORER) {
 
-            SBIEDLL_HOOK_GUI(GetShellWindow);
+            CobraSboxDll_HOOK_GUI(GetShellWindow);
         }
     }
 
@@ -234,21 +234,21 @@ _FX BOOLEAN Gui_InitEnum(HMODULE module)
     // hook desktop APIs
     //
 
-    SBIEDLL_HOOK_GUI(EnumDesktopsW);
-    SBIEDLL_HOOK_GUI(EnumDesktopsA);
-    SBIEDLL_HOOK_GUI(OpenDesktopW);
-    SBIEDLL_HOOK_GUI(OpenDesktopA);
+    CobraSboxDll_HOOK_GUI(EnumDesktopsW);
+    CobraSboxDll_HOOK_GUI(EnumDesktopsA);
+    CobraSboxDll_HOOK_GUI(OpenDesktopW);
+    CobraSboxDll_HOOK_GUI(OpenDesktopA);
 
     // Chrome 52+ now requires the CreateDesktop call for
     // the chrome sandbox desktop. Note:  the sandboxie hook
     // raises an error when CreateDesktop is call.  This hook
     // is removed for chrome.  See advapi.c: AdvApi_GetSecurityInfo
 
-    SBIEDLL_HOOK_GUI(CreateDesktopW);
-    SBIEDLL_HOOK_GUI(CreateDesktopA);
+    CobraSboxDll_HOOK_GUI(CreateDesktopW);
+    CobraSboxDll_HOOK_GUI(CreateDesktopA);
     
-    SBIEDLL_HOOK_GUI(CreateWindowStationW);
-    SBIEDLL_HOOK_GUI(CreateWindowStationA);
+    CobraSboxDll_HOOK_GUI(CreateWindowStationW);
+    CobraSboxDll_HOOK_GUI(CreateWindowStationA);
 
     return TRUE;
 }
@@ -358,7 +358,7 @@ _FX BOOLEAN Gui_HookQueryWindow(HMODULE module)
         SbieApi_Log(2303, L"%S (0)", _ProcName);
     }
     __sys_NtUserQueryWindow = (P_NtUserQueryWindow)code;
-    SBIEDLL_HOOK_GUI(NtUserQueryWindow);
+    CobraSboxDll_HOOK_GUI(NtUserQueryWindow);
 
     return TRUE;
 }
@@ -643,7 +643,7 @@ _FX HDESK Gui_CreateDesktopW(
         //Call the system CreateDesktopW without a security context. 
         //This works in tandem with the Ntmarta_GetSecurityInfo hook (see in advapi.c).
 
-        //Also see comment in Ntmarta_Init at SBIEDLL_HOOK2(Ntmarta_,GetSecurityInfo) for
+        //Also see comment in Ntmarta_Init at CobraSboxDll_HOOK2(Ntmarta_,GetSecurityInfo) for
         //Acrobat Reader.  This is needed to allow this process to create a desktop with
         //the sandboxie restricted token by dropping the security context.  This won't
         //work without the GetSecurityInfo hook.
@@ -1132,7 +1132,7 @@ _FX BOOLEAN Gui_Init_D3D11(HMODULE module)
             target = (LONG_PTR) D3D11CreateDevice;
             target + 5;
             *((LONG *) (&tramp[6])) = target - src;
-            //SBIEDLL_HOOK_GUI(D3D11CreateDevice);
+            //CobraSboxDll_HOOK_GUI(D3D11CreateDevice);
             __sys_D3D11CreateDevice = (P_D3D11CreateDevice) tramp;
             sprintf(buffer,"__sys_D3D11CreateDevice = %p, tramp = %p,delta = %p \n",__sys_D3D11CreateDevice, tramp, target - src);
             OutputDebugStringA(buffer);

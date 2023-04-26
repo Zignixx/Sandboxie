@@ -26,7 +26,7 @@
 // dump the machine code bytes here
 //
 
-UCHAR SbieDll_ShellCode_x86[] = 
+UCHAR CobraSboxDll_ShellCode_x86[] = 
 {
 	0xBA, 0, 0, 0, 0,				// mov	edx, 0						; edx -> inject data area
 
@@ -69,12 +69,12 @@ UCHAR SbieDll_ShellCode_x86[] =
 								// LdrLoadDll_Good:
 	
 									//
-									// call LdrLoadDll for sbiedll
+									// call LdrLoadDll for CobraSboxDll
 									//
 
 	0x8D, 0x46, 0x60,				// lea	eax,[esi+60h]			; ... [esi].InjectData.ModuleHandle
 	0x50,							// push	eax
-	0x8D, 0x46, 0x50,				// lea	eax,[esi+50h]			; ... [esi].InjectData.SbieDll_Unicode
+	0x8D, 0x46, 0x50,				// lea	eax,[esi+50h]			; ... [esi].InjectData.CobraSboxDll_Unicode
 	0x50,							// push	eax
 	0x6A, 0x00,						// push	0
 	0x6A, 0x00,						// push	0
@@ -84,11 +84,11 @@ UCHAR SbieDll_ShellCode_x86[] =
 	0x75, 0x21,						// jnz	RtlFindActivationContextSectionStringError
 	
 									//
-									// call LdrGetProcedureAddress for sbiedll ordinal 1,
-									// which forces ntdll to initialize sbiedll
+									// call LdrGetProcedureAddress for CobraSboxDll ordinal 1,
+									// which forces ntdll to initialize CobraSboxDll
 									//
 
-	0x8D, 0x46, 0x68,				// lea	eax,[esi+68h]		; ... [esi].InjectData.SbieDllOrdinal1
+	0x8D, 0x46, 0x68,				// lea	eax,[esi+68h]		; ... [esi].InjectData.CobraSboxDllOrdinal1
 	0x50,							// push	eax
 	0x6A, 0x01,						// push	1
 	0x6A, 0x00,						// push	0
@@ -107,7 +107,7 @@ UCHAR SbieDll_ShellCode_x86[] =
 	0x89, 0x46, 0x08,				// mov	dword ptr [esi+8],eax	; ... [esi].InjectData.LdrLoadDll ...
 	0x8B, 0xC6,						// mov	eax, esi
 	0x5E,							// pop	esi
-	0xFF, 0x60, 0x68,				// jmp	dword ptr [eax+68h]		; ... [eax].InjectData.SbieDllOrdinal1
+	0xFF, 0x60, 0x68,				// jmp	dword ptr [eax+68h]		; ... [eax].InjectData.CobraSboxDllOrdinal1
 	
 									//
 									// display error message ...
@@ -116,7 +116,7 @@ UCHAR SbieDll_ShellCode_x86[] =
 								// RtlFindActivationContextSectionStringError:
 	0x50,							// push	eax
 
-	0x8D, 0x56, 0x50,				// lea	edx,[esi+50h]			; ... [esi].InjectData.SbieDll_Unicode
+	0x8D, 0x56, 0x50,				// lea	edx,[esi+50h]			; ... [esi].InjectData.CobraSboxDll_Unicode
 	0x89, 0x56, 0x08,				// mov	dword ptr [esi+8],edx	; ... [esi].InjectData.LdrLoadDll ... 
 
 	0x8d, 0x56, 0x10,				// lea	edx,[esi+10h]			; ... [esi].InjectData.LdrGetProcAddr
@@ -145,7 +145,7 @@ UCHAR SbieDll_ShellCode_x86[] =
 // dump the machine code bytes here
 //
 
-//UCHAR SbieDll_ShellCode_x64[] = 
+//UCHAR CobraSboxDll_ShellCode_x64[] = 
 //{
 //
 //	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// inject data area address
@@ -196,13 +196,13 @@ UCHAR SbieDll_ShellCode_x86[] =
 //	0xEB, 0x54,						// jmp  0xb2											; RtlFindActivationContextSectionStringError
 //
 //									//
-//									// call LdrLoadDll for sbiedll
+//									// call LdrLoadDll for CobraSboxDll
 //									//
 //									// LdrLoadGood:
 //	0x48, 0x8B, 0x5E, 0x2C,         // mov  rbx, qword ptr [rsi + 0x2c]					; ... [rsi].InjectData.RtlFindActCtx_Bytes
 //	0x48, 0x33, 0xC9,               // xor  rcx, rcx
 //	0x48, 0x33, 0xD2,               // xor  rdx, rdx
-//	0x4C, 0x8D, 0x46, 0x50,         // lea  r8, [rsi + 0x50]								; ... [rsi].InjectData.SbieDll_Unicode
+//	0x4C, 0x8D, 0x46, 0x50,         // lea  r8, [rsi + 0x50]								; ... [rsi].InjectData.CobraSboxDll_Unicode
 //	0x4C, 0x8D, 0x4E, 0x60,         // lea  r9, [rsi + 0x60]								; ... [rsi].InjectData.ModuleHandle
 //	0xFF, 0x56, 0x08,               // call qword ptr [rsi + 8]							; ... [rsi].InjectData.LdrLoadDll
 //
@@ -210,15 +210,15 @@ UCHAR SbieDll_ShellCode_x86[] =
 //	0x75, 0x3B,						// jne  0xb2											; RtlFindActivationContextSectionStringError
 //
 //									//
-//									// call LdrGetProcedureAddress for sbiedll ordinal 1,
-//									// which forces ntdll to initialize sbiedll
+//									// call LdrGetProcedureAddress for CobraSboxDll ordinal 1,
+//									// which forces ntdll to initialize CobraSboxDll
 //									//
 //
 //	0x48, 0x8B, 0x4E, 0x60,         // mov  rcx, qword ptr [rsi + 0x60]					; ... [rsi].InjectData.ModuleHandle
 //	0x48, 0x33, 0xD2,               // xor  rdx, rdx
 //	0x4D, 0x33, 0xC0,               // xor  r8, r8
 //	0x49, 0xFF, 0xC0,               // inc  r8
-//	0x4C, 0x8D, 0x4E, 0x68,         // lea  r9, [rsi + 0x68]								; ... [rsi].InjectData.SbieDllOrdinal1
+//	0x4C, 0x8D, 0x4E, 0x68,         // lea  r9, [rsi + 0x68]								; ... [rsi].InjectData.CobraSboxDllOrdinal1
 //	0xFF, 0x56, 0x10,               // call qword ptr [rsi + 0x10]						; ... [rsi].InjectData.LdrGetProcAddr
 //
 //	0x85, 0xC0,						// test eax, eax
@@ -244,7 +244,7 @@ UCHAR SbieDll_ShellCode_x86[] =
 //
 //	0x48, 0x83, 0xC4, 0x40,			// add  rsp, 0x40
 //	0x5E,							// pop  rsi
-//	0xFF, 0x61, 0x68,               // jmp  qword ptr [rcx + 0x68]						; [rcx].InjectData.SbieDllOrdinal1
+//	0xFF, 0x61, 0x68,               // jmp  qword ptr [rcx + 0x68]						; [rcx].InjectData.CobraSboxDllOrdinal1
 //
 //									//
 //									// display error message, invoke NtRaiseHardError(
@@ -264,7 +264,7 @@ UCHAR SbieDll_ShellCode_x86[] =
 //	0x48, 0xFF, 0xC2,               // inc  rdx
 //	0x4C, 0x8B, 0xC2,               // mov  r8, rdx										; mask_of_strings_in_list
 //	0x67, 0x4C, 0x8D, 0x4E, 0x08,   // lea  r9, [esi + 8]								; ... [esi].InjectData.LdrLoadDll ; list_of_pointers_to_parameters
-//	0x48, 0x8D, 0x46, 0x50,         // lea  rax, [rsi + 0x50]							; ... [rsi].InjectData.SbieDll_Unicode
+//	0x48, 0x8D, 0x46, 0x50,         // lea  rax, [rsi + 0x50]							; ... [rsi].InjectData.CobraSboxDll_Unicode
 //	0x49, 0x89, 0x01,               // mov  qword ptr [r9], rax
 //	0x48, 0x89, 0x54, 0x24, 0x20,   // mov  qword ptr [rsp + 0x20], rdx					; response_buttons - ERROR_OK
 //	0x48, 0x8D, 0x46, 0x10,         // lea  rax, [rsi + 0x10]							; ... [rsi].InjectData.LdrGetProcAddr

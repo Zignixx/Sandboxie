@@ -68,7 +68,7 @@ _FX BOOLEAN Gui_InitTitle(HMODULE module)
     // initialize title variables
     //
 
-    SbieDll_GetSettingsForName(NULL, Dll_ImageName, L"BoxNameTitle", buf, sizeof(buf), NULL);
+    CobraSboxDll_GetSettingsForName(NULL, Dll_ImageName, L"BoxNameTitle", buf, sizeof(buf), NULL);
     if (*buf == L'y' || *buf == L'Y') { // indicator + box name
 
         UNICODE_STRING uni;
@@ -97,8 +97,8 @@ _FX BOOLEAN Gui_InitTitle(HMODULE module)
 
     if (! Gui_DisableTitle) {
 
-        SBIEDLL_HOOK_GUI(GetWindowTextW);
-        SBIEDLL_HOOK_GUI(GetWindowTextA);
+        CobraSboxDll_HOOK_GUI(GetWindowTextW);
+        CobraSboxDll_HOOK_GUI(GetWindowTextA);
     }
 
     return TRUE;

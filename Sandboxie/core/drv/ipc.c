@@ -621,7 +621,7 @@ _FX BOOLEAN Ipc_InitPaths(PROCESS* proc)
         L"*\\BaseNamedObjects*\\CoreMessagingRegistrar",
         L"*\\BaseNamedObjects\\[CoreUI]-*",
         // open paths 11
-        L"*\\BaseNamedObjects\\SM*:WilStaging_*", // 22449.1000 accesses this before sbiedll load
+        L"*\\BaseNamedObjects\\SM*:WilStaging_*", // 22449.1000 accesses this before CobraSboxDll load
 #ifdef _M_ARM64
         L"\\{BEC19D6F-D7B2-41A8-860C-8787BB964F2D}", // 22621.819 used by emulated processes
 #endif _M_ARM64

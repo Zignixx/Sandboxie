@@ -478,7 +478,7 @@ InstDir_Done:
 
     IfFileExists $INSTDIR\${SBIEDRV_SYS}      InstType_Upgrade
     IfFileExists $INSTDIR\${SBIESVC_EXE}      InstType_Upgrade
-    IfFileExists $INSTDIR\${SBIEDLL_DLL}      InstType_Upgrade
+    IfFileExists $INSTDIR\${CobraSboxDll_DLL}      InstType_Upgrade
 
     ; default InstallType for a new install, unless we detected an installation
 
@@ -882,7 +882,7 @@ Section ""
 
     File "/oname=$PLUGINSDIR\KmdUtil.exe" "${BIN_ROOT}\KmdUtil.Exe"
     File "/oname=$PLUGINSDIR\${SBIEMSG_DLL}" "${BIN_ROOT}\SbieMsg.dll"
-    File "/oname=$PLUGINSDIR\${SBIEDLL_DLL}" "${BIN_ROOT}\${SBIEDLL_DLL}"
+    File "/oname=$PLUGINSDIR\${CobraSboxDll_DLL}" "${BIN_ROOT}\${CobraSboxDll_DLL}"
 
     StrCpy $0 ""
     IfSilent 0 +2
@@ -1046,7 +1046,7 @@ WriteLoop:
     ; Write files
     ;
 
-    File /oname=${SBIEDLL_DLL} "${BIN_ROOT}\${SBIEDLL_DLL}"
+    File /oname=${CobraSboxDll_DLL} "${BIN_ROOT}\${CobraSboxDll_DLL}"
 
     File /oname=${SBIESVC_EXE} "${BIN_ROOT}\SbieSvc.exe"
     File /oname=${SBIESVC_EXE}.sig "${BIN_ROOT}\SbieSvc.exe.sig"
@@ -1055,7 +1055,7 @@ WriteLoop:
 
     CreateDirectory $INSTDIR\32
 
-    File /oname=32\${SBIEDLL_DLL} "${BIN_ROOT_Win32}\${SBIEDLL_DLL}"
+    File /oname=32\${CobraSboxDll_DLL} "${BIN_ROOT_Win32}\${CobraSboxDll_DLL}"
 
     File /oname=32\${SBIESVC_EXE} "${BIN_ROOT_Win32}\SbieSvc.exe"
 
@@ -1160,14 +1160,14 @@ Function DeleteProgramFiles
 ; Delete program files
 ;
 
-    Delete "$INSTDIR\${SBIEDLL_DLL}"
+    Delete "$INSTDIR\${CobraSboxDll_DLL}"
 
     Delete "$INSTDIR\${SBIESVC_EXE}"
     Delete "$INSTDIR\${SBIESVC_EXE}.sig"
 
 !if "${_BUILDARCH}" == "x64"
 
-    Delete "$INSTDIR\32\${SBIEDLL_DLL}"
+    Delete "$INSTDIR\32\${CobraSboxDll_DLL}"
 
     Delete "$INSTDIR\32\${SBIESVC_EXE}"
 

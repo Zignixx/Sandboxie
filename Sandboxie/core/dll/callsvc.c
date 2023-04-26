@@ -17,7 +17,7 @@
  */
 
 //---------------------------------------------------------------------------
-// Sandboxie DLL (SbieDll) to Sandboxie Service (SbieSvc) RPC Interface
+// Sandboxie DLL (CobraSboxDll) to Sandboxie Service (SbieSvc) RPC Interface
 //---------------------------------------------------------------------------
 
 
@@ -29,11 +29,11 @@
 
 
 //---------------------------------------------------------------------------
-// SbieDll_PortName
+// CobraSboxDll_PortName
 //---------------------------------------------------------------------------
 
 
-_FX const WCHAR *SbieDll_PortName(void)
+_FX const WCHAR *CobraSboxDll_PortName(void)
 {
     static const WCHAR *_name = L"\\RPC Control\\" SBIESVC L"Port";
     return _name;
@@ -41,12 +41,12 @@ _FX const WCHAR *SbieDll_PortName(void)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_IsWow64
+// CobraSboxDll_IsWow64
 //---------------------------------------------------------------------------
 
 
 #ifndef _WIN64
-_FX BOOLEAN SbieDll_IsWow64(void)
+_FX BOOLEAN CobraSboxDll_IsWow64(void)
 {
     //
     // in a sandbox process, Dll_IsWow64 is initialized during
@@ -78,11 +78,11 @@ _FX BOOLEAN SbieDll_IsWow64(void)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_ConnectPort
+// CobraSboxDll_ConnectPort
 //---------------------------------------------------------------------------
 
 
-_FX NTSTATUS SbieDll_ConnectPort()
+_FX NTSTATUS CobraSboxDll_ConnectPort()
 {
     THREAD_DATA *data = Dll_GetTlsData(NULL);
     if (! data->PortHandle) {
@@ -96,7 +96,7 @@ _FX NTSTATUS SbieDll_ConnectPort()
         QoS.ContextTrackingMode = SECURITY_DYNAMIC_TRACKING;
         QoS.EffectiveOnly = TRUE;
 
-        RtlInitUnicodeString(&PortName, SbieDll_PortName());
+        RtlInitUnicodeString(&PortName, CobraSboxDll_PortName());
 
         status = NtConnectPort(
             &data->PortHandle, &PortName, &QoS,
@@ -115,7 +115,7 @@ _FX NTSTATUS SbieDll_ConnectPort()
 
 #ifndef _WIN64
         if (! Dll_BoxName)
-            SbieDll_IsWow64();
+            CobraSboxDll_IsWow64();
 
         if (Dll_IsWow64) {
 
@@ -138,11 +138,11 @@ _FX NTSTATUS SbieDll_ConnectPort()
 
 
 //---------------------------------------------------------------------------
-// SbieDll_CallServer
+// CobraSboxDll_CallServer
 //---------------------------------------------------------------------------
 
 
-_FX MSG_HEADER *SbieDll_CallServer(MSG_HEADER *req)
+_FX MSG_HEADER *CobraSboxDll_CallServer(MSG_HEADER *req)
 {
     static volatile ULONG last_sequence = 0;
     UCHAR curr_sequence;
@@ -160,19 +160,19 @@ _FX MSG_HEADER *SbieDll_CallServer(MSG_HEADER *req)
         extern const wchar_t* Trace_SbieGuiFunc2Str(ULONG func);
         switch (req->msgid) {
             //case MSGID_QUEUE:
-        case MSGID_QUEUE_CREATE: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue create %s", Dll_ImageName, ((QUEUE_CREATE_REQ*)req)->queue_name); break;
-        case MSGID_QUEUE_GETREQ: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue getreq %s", Dll_ImageName, ((QUEUE_GETREQ_REQ*)req)->queue_name); break;
-        case MSGID_QUEUE_PUTRPL: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue putrpl %s", Dll_ImageName, ((QUEUE_PUTRPL_REQ*)req)->queue_name); break;
+        case MSGID_QUEUE_CREATE: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue create %s", Dll_ImageName, ((QUEUE_CREATE_REQ*)req)->queue_name); break;
+        case MSGID_QUEUE_GETREQ: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue getreq %s", Dll_ImageName, ((QUEUE_GETREQ_REQ*)req)->queue_name); break;
+        case MSGID_QUEUE_PUTRPL: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue putrpl %s", Dll_ImageName, ((QUEUE_PUTRPL_REQ*)req)->queue_name); break;
         case MSGID_QUEUE_PUTREQ: 
             if (wcsstr(((QUEUE_PUTREQ_REQ*)req)->queue_name, L"*GUIPROXY_") != NULL)
-                Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue putreq %s %s", Dll_ImageName, ((QUEUE_PUTREQ_REQ*)req)->queue_name, Trace_SbieGuiFunc2Str(*((ULONG*)((QUEUE_PUTREQ_REQ*)req)->data))); 
+                Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue putreq %s %s", Dll_ImageName, ((QUEUE_PUTREQ_REQ*)req)->queue_name, Trace_SbieGuiFunc2Str(*((ULONG*)((QUEUE_PUTREQ_REQ*)req)->data))); 
             else
-                Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue putreq %s %d", Dll_ImageName, ((QUEUE_PUTREQ_REQ*)req)->queue_name, *((ULONG*)((QUEUE_PUTREQ_REQ*)req)->data)); 
+                Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue putreq %s %d", Dll_ImageName, ((QUEUE_PUTREQ_REQ*)req)->queue_name, *((ULONG*)((QUEUE_PUTREQ_REQ*)req)->data)); 
             break;
-        case MSGID_QUEUE_GETRPL: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s queue getrpl %s", Dll_ImageName, ((QUEUE_GETRPL_REQ*)req)->queue_name); break;
+        case MSGID_QUEUE_GETRPL: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s queue getrpl %s", Dll_ImageName, ((QUEUE_GETRPL_REQ*)req)->queue_name); break;
             //case MSGID_QUEUE_NOTIFICATION:
-        //default: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s 0x%04x", Dll_ImageName, req->msgid);
-        default: Sbie_snwprintf(dbg, 1024, L"SbieDll_CallServer: %s %s", Dll_ImageName, Trace_SbieSvcFunc2Str(req->msgid));
+        //default: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s 0x%04x", Dll_ImageName, req->msgid);
+        default: Sbie_snwprintf(dbg, 1024, L"CobraSboxDll_CallServer: %s %s", Dll_ImageName, Trace_SbieSvcFunc2Str(req->msgid));
         }
         SbieApi_MonitorPutMsg(MONITOR_OTHER | MONITOR_TRACE, dbg);
     }
@@ -186,7 +186,7 @@ _FX MSG_HEADER *SbieDll_CallServer(MSG_HEADER *req)
         BOOLEAN Silent = (req->msgid == MSGID_SBIE_INI_GET_VERSION ||
                           req->msgid == MSGID_SBIE_INI_GET_USER ||
                           req->msgid == MSGID_PROCESS_CHECK_INIT_COMPLETE);
-        status = SbieDll_ConnectPort();
+        status = CobraSboxDll_ConnectPort();
         if (!NT_SUCCESS(status)) {
             if (!Dll_AppContainerToken && !Silent) // todo: fix me make service available for appcontainer processes
                 SbieApi_Log(2203, L"connect %08X (msg_id 0x%04X)", status, req->msgid);
@@ -347,11 +347,11 @@ _FX MSG_HEADER *SbieDll_CallServer(MSG_HEADER *req)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_CallServerQueue
+// CobraSboxDll_CallServerQueue
 //---------------------------------------------------------------------------
 
 
-_FX void *SbieDll_CallServerQueue(const WCHAR* queue, void *req, ULONG req_len, ULONG rpl_min_len)
+_FX void *CobraSboxDll_CallServerQueue(const WCHAR* queue, void *req, ULONG req_len, ULONG rpl_min_len)
 {
 	//static ULONG _Ticks = 0;
 	//static ULONG _Ticks1 = 0;
@@ -372,7 +372,7 @@ _FX void *SbieDll_CallServerQueue(const WCHAR* queue, void *req, ULONG req_len, 
 
 	Sbie_snwprintf(QueueName, 64, L"*%s_%08X", queue, Dll_SessionId);
 
-	status = SbieDll_QueuePutReq(QueueName, req, req_len, &req_id, &event);
+	status = CobraSboxDll_QueuePutReq(QueueName, req, req_len, &req_id, &event);
 	if (NT_SUCCESS(status)) {
 
 		if (WaitForSingleObject(event, 60 * 1000) != 0)
@@ -383,7 +383,7 @@ _FX void *SbieDll_CallServerQueue(const WCHAR* queue, void *req, ULONG req_len, 
 
 	if (status == 0) {
 
-		status = SbieDll_QueueGetRpl(QueueName, req_id, &data, &data_len);
+		status = CobraSboxDll_QueueGetRpl(QueueName, req_id, &data, &data_len);
 
 		if (NT_SUCCESS(status)) {
 
@@ -419,11 +419,11 @@ _FX void *SbieDll_CallServerQueue(const WCHAR* queue, void *req, ULONG req_len, 
 
 
 //---------------------------------------------------------------------------
-// SbieDll_FreeMem
+// CobraSboxDll_FreeMem
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_FreeMem(void *data)
+_FX void CobraSboxDll_FreeMem(void *data)
 {
     if (data)
         Dll_Free(data);
@@ -431,11 +431,11 @@ _FX void SbieDll_FreeMem(void *data)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueueCreate
+// CobraSboxDll_QueueCreate
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueueCreate(const WCHAR *QueueName,
+_FX ULONG CobraSboxDll_QueueCreate(const WCHAR *QueueName,
                               HANDLE *out_EventHandle)
 {
     NTSTATUS status;
@@ -452,7 +452,7 @@ _FX ULONG SbieDll_QueueCreate(const WCHAR *QueueName,
         status = STATUS_UNSUCCESSFUL;
     else {
 
-        rpl = (QUEUE_CREATE_RPL *)SbieDll_CallServer(&req.h);
+        rpl = (QUEUE_CREATE_RPL *)CobraSboxDll_CallServer(&req.h);
         if (! rpl)
             status = STATUS_SERVER_DISABLED;
         else {
@@ -473,11 +473,11 @@ _FX ULONG SbieDll_QueueCreate(const WCHAR *QueueName,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueueGetReq
+// CobraSboxDll_QueueGetReq
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueueGetReq(const WCHAR *QueueName,
+_FX ULONG CobraSboxDll_QueueGetReq(const WCHAR *QueueName,
                               ULONG *out_ClientPid,
                               ULONG *out_ClientTid,
                               ULONG *out_RequestId,
@@ -492,7 +492,7 @@ _FX ULONG SbieDll_QueueGetReq(const WCHAR *QueueName,
     req.h.msgid  = MSGID_QUEUE_GETREQ;
     wcscpy(req.queue_name, QueueName);
 
-    rpl = (QUEUE_GETREQ_RPL *)SbieDll_CallServer(&req.h);
+    rpl = (QUEUE_GETREQ_RPL *)CobraSboxDll_CallServer(&req.h);
     if (! rpl)
         status = STATUS_SERVER_DISABLED;
     else {
@@ -533,11 +533,11 @@ _FX ULONG SbieDll_QueueGetReq(const WCHAR *QueueName,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueuePutRpl
+// CobraSboxDll_QueuePutRpl
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueuePutRpl(const WCHAR *QueueName,
+_FX ULONG CobraSboxDll_QueuePutRpl(const WCHAR *QueueName,
                               ULONG RequestId,
                               void *DataPtr,
                               ULONG DataLen)
@@ -556,7 +556,7 @@ _FX ULONG SbieDll_QueuePutRpl(const WCHAR *QueueName,
     req->data_len = DataLen;
     memcpy(req->data, DataPtr, DataLen);
 
-    rpl = (QUEUE_PUTRPL_RPL *)SbieDll_CallServer(&req->h);
+    rpl = (QUEUE_PUTRPL_RPL *)CobraSboxDll_CallServer(&req->h);
     if (! rpl)
         status = STATUS_SERVER_DISABLED;
     else {
@@ -572,11 +572,11 @@ _FX ULONG SbieDll_QueuePutRpl(const WCHAR *QueueName,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueuePutReq
+// CobraSboxDll_QueuePutReq
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueuePutReq(const WCHAR *QueueName,
+_FX ULONG CobraSboxDll_QueuePutReq(const WCHAR *QueueName,
                               void *DataPtr,
                               ULONG DataLen,
                               ULONG *out_RequestId,
@@ -601,7 +601,7 @@ _FX ULONG SbieDll_QueuePutReq(const WCHAR *QueueName,
         status = STATUS_UNSUCCESSFUL;
     else {
 
-        rpl = (QUEUE_PUTREQ_RPL *)SbieDll_CallServer(&req->h);
+        rpl = (QUEUE_PUTREQ_RPL *)CobraSboxDll_CallServer(&req->h);
         if (! rpl)
             status = STATUS_SERVER_DISABLED;
         else {
@@ -634,11 +634,11 @@ _FX ULONG SbieDll_QueuePutReq(const WCHAR *QueueName,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueueGetRpl
+// CobraSboxDll_QueueGetRpl
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueueGetRpl(const WCHAR *QueueName,
+_FX ULONG CobraSboxDll_QueueGetRpl(const WCHAR *QueueName,
                                           ULONG RequestId,
                                           void **out_DataPtr,
                                           ULONG *out_DataLen)
@@ -652,7 +652,7 @@ _FX ULONG SbieDll_QueueGetRpl(const WCHAR *QueueName,
     wcscpy(req.queue_name, QueueName);
     req.req_id = RequestId;
 
-    rpl = (QUEUE_GETRPL_RPL *)SbieDll_CallServer(&req.h);
+    rpl = (QUEUE_GETRPL_RPL *)CobraSboxDll_CallServer(&req.h);
     if (! rpl)
         status = STATUS_SERVER_DISABLED;
     else {
@@ -683,11 +683,11 @@ _FX ULONG SbieDll_QueueGetRpl(const WCHAR *QueueName,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_UpdateConf
+// CobraSboxDll_UpdateConf
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_UpdateConf(
+_FX ULONG CobraSboxDll_UpdateConf(
     WCHAR OpCode, const WCHAR *Password, const WCHAR *Section,
     const WCHAR *Setting, const WCHAR *Value)
 {
@@ -738,7 +738,7 @@ _FX ULONG SbieDll_UpdateConf(
         req->value[0] = L'\0';
     req->value_len = wcslen(req->value);
 
-    rpl = (MSG_HEADER *)SbieDll_CallServer(&req->h);
+    rpl = (MSG_HEADER *)CobraSboxDll_CallServer(&req->h);
 
     if (! rpl)
         status = STATUS_INSUFFICIENT_RESOURCES;
@@ -753,11 +753,11 @@ _FX ULONG SbieDll_UpdateConf(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueryConf
+// CobraSboxDll_QueryConf
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_QueryConf(const WCHAR *Section, const WCHAR *Setting,
+_FX ULONG CobraSboxDll_QueryConf(const WCHAR *Section, const WCHAR *Setting,
     ULONG setting_index, WCHAR *out_buffer, ULONG buffer_len)
 {
     SBIE_INI_SETTING_REQ *req;
@@ -785,7 +785,7 @@ _FX ULONG SbieDll_QueryConf(const WCHAR *Section, const WCHAR *Setting,
     req->value[0] = L'\0';
     req->value_len = wcslen(req->value);
 
-    rpl = (SBIE_INI_SETTING_RPL *)SbieDll_CallServer(&req->h);
+    rpl = (SBIE_INI_SETTING_RPL *)CobraSboxDll_CallServer(&req->h);
 
     if (! rpl)
         status = STATUS_INSUFFICIENT_RESOURCES;
@@ -807,11 +807,11 @@ _FX ULONG SbieDll_QueryConf(const WCHAR *Section, const WCHAR *Setting,
 
 
 //---------------------------------------------------------------------------
-// SbieDll_RunSandboxed
+// CobraSboxDll_RunSandboxed
 //---------------------------------------------------------------------------
 
 
-_FX BOOL SbieDll_RunSandboxed(
+_FX BOOL CobraSboxDll_RunSandboxed(
     const WCHAR *box_name, const WCHAR *cmd, const WCHAR *dir,
     ULONG creation_flags, STARTUPINFO *si, PROCESS_INFORMATION *pi)
 {
@@ -879,7 +879,7 @@ _FX BOOL SbieDll_RunSandboxed(
     // execute request
     //
 
-    rpl = (PROCESS_RUN_SANDBOXED_RPL *)SbieDll_CallServer(&req->h);
+    rpl = (PROCESS_RUN_SANDBOXED_RPL *)CobraSboxDll_CallServer(&req->h);
 
     Dll_Free(req);
 

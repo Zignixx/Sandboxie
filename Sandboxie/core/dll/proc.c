@@ -380,12 +380,12 @@ _FX BOOLEAN Proc_Init(void)
     // intercept and fake success for NtSetInformationProcess
     //
 
-    SBIEDLL_HOOK(Proc_,NtSetInformationProcess);
+    CobraSboxDll_HOOK(Proc_,NtSetInformationProcess);
 
-    SBIEDLL_HOOK(Proc_,NtQueryInformationProcess);
+    CobraSboxDll_HOOK(Proc_,NtQueryInformationProcess);
 
     if (Dll_OsBuild >= 14942) // Windows 10
-        SbieDll_DisableCHPE();
+        CobraSboxDll_DisableCHPE();
 
     //
     // RtlCreateProcessParameters
@@ -396,12 +396,12 @@ _FX BOOLEAN Proc_Init(void)
         P_RtlCreateProcessParametersEx RtlCreateProcessParametersEx =
             (P_RtlCreateProcessParametersEx) GetProcAddress(
                 Dll_Ntdll, "RtlCreateProcessParametersEx");
-        SBIEDLL_HOOK(Proc_,RtlCreateProcessParametersEx);
+        CobraSboxDll_HOOK(Proc_,RtlCreateProcessParametersEx);
 
         P_NtCreateUserProcess NtCreateUserProcess =
             (P_NtCreateUserProcess) GetProcAddress(
                 Dll_Ntdll, "NtCreateUserProcess");
-        SBIEDLL_HOOK(Proc_,NtCreateUserProcess);
+        CobraSboxDll_HOOK(Proc_,NtCreateUserProcess);
     }
 
     //
@@ -421,7 +421,7 @@ _FX BOOLEAN Proc_Init(void)
 		status = LdrGetProcedureAddress(
 			Dll_KernelBase, &ansi, 0, (void **)&UpdateProcThreadAttribute);
 		if (NT_SUCCESS(status))
-			SBIEDLL_HOOK(Proc_, UpdateProcThreadAttribute);
+			CobraSboxDll_HOOK(Proc_, UpdateProcThreadAttribute);
 	}
 
     //
@@ -436,7 +436,7 @@ _FX BOOLEAN Proc_Init(void)
         status = LdrGetProcedureAddress(
             Dll_KernelBase, &ansi, 0, (void**)&SetProcessMitigationPolicy);
         if (NT_SUCCESS(status))
-            SBIEDLL_HOOK(Proc_, SetProcessMitigationPolicy);
+            CobraSboxDll_HOOK(Proc_, SetProcessMitigationPolicy);
     }
 
     //
@@ -456,7 +456,7 @@ _FX BOOLEAN Proc_Init(void)
         status = LdrGetProcedureAddress(
             Dll_KernelBase, &ansi, 0, (void**)&CreateAppContainerToken);
         if (NT_SUCCESS(status))
-            SBIEDLL_HOOK(Proc_, CreateAppContainerToken);
+            CobraSboxDll_HOOK(Proc_, CreateAppContainerToken);
     }
 
     //
@@ -476,7 +476,7 @@ _FX BOOLEAN Proc_Init(void)
             Dll_Kernel32, &ansi, 0, (void **)&CreateProcessInternalW);
     }
 
-    SBIEDLL_HOOK(Proc_,CreateProcessInternalW);
+    CobraSboxDll_HOOK(Proc_,CreateProcessInternalW);
 
     //
     // ExitProcess
@@ -484,14 +484,14 @@ _FX BOOLEAN Proc_Init(void)
 
     if (Dll_ImageType == DLL_IMAGE_SERVICE_MODEL_REG) {
 
-        SBIEDLL_HOOK(Proc_,ExitProcess);
+        CobraSboxDll_HOOK(Proc_,ExitProcess);
     }
 
     //
     // WinExec
     //
 
-    SBIEDLL_HOOK(Proc_,WinExec);
+    CobraSboxDll_HOOK(Proc_,WinExec);
 
     //
     // NtCreateProcessEx
@@ -503,7 +503,7 @@ _FX BOOLEAN Proc_Init(void)
     //        (P_NtCreateProcessEx) GetProcAddress(
     //            Dll_Ntdll, "NtCreateProcessEx");
 
-    //    SBIEDLL_HOOK(Proc_,NtCreateProcessEx);
+    //    CobraSboxDll_HOOK(Proc_,NtCreateProcessEx);
     //}
 
     return TRUE;
@@ -511,18 +511,18 @@ _FX BOOLEAN Proc_Init(void)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_DisableCHPE
+// CobraSboxDll_DisableCHPE
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_DisableCHPE(void)
+_FX BOOLEAN CobraSboxDll_DisableCHPE(void)
 {
     HMODULE module = Dll_Ntdll;
 
     P_LdrQueryImageFileExecutionOptionsEx LdrQueryImageFileExecutionOptionsEx =
         (P_LdrQueryImageFileExecutionOptionsEx) GetProcAddress(
             Dll_Ntdll, "LdrQueryImageFileExecutionOptionsEx");
-    SBIEDLL_HOOK(Proc_, LdrQueryImageFileExecutionOptionsEx);
+    CobraSboxDll_HOOK(Proc_, LdrQueryImageFileExecutionOptionsEx);
 
     return TRUE;
 }
@@ -541,7 +541,7 @@ _FX BOOLEAN Proc_Init_AdvApi(HMODULE module)
             (P_CreateProcessWithTokenW) GetProcAddress(
                 module, "CreateProcessWithTokenW");
 
-        SBIEDLL_HOOK(Proc_,CreateProcessWithTokenW);
+        CobraSboxDll_HOOK(Proc_,CreateProcessWithTokenW);
     }
 
     __sys_GetTokenInformation = (P_GetTokenInformation) GetProcAddress(module, "GetTokenInformation");
@@ -626,7 +626,7 @@ _FX BOOL Proc_UpdateProcThreadAttribute(
             return TRUE;
     }
 
-	// some mitigation flags break SbieDll.dll Injection, so we disable them
+	// some mitigation flags break CobraSboxDll.dll Injection, so we disable them
 	if (Attribute == 0x00020007) //PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY
 	{
 		DWORD64* policy_value_1 = cbSize >= sizeof(DWORD64) ? lpValue : NULL;
@@ -1198,8 +1198,8 @@ _FX BOOL Proc_CreateProcessInternalW(
     if(lpApplicationName) {
         const WCHAR* lpProgram = wcsrchr(lpApplicationName, L'\\');
         if (lpProgram) {
-            if (SbieDll_CheckStringInList(lpProgram + 1, NULL, L"BreakoutProcess")
-                || SbieDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName),  NULL, L"BreakoutFolder")) {
+            if (CobraSboxDll_CheckStringInList(lpProgram + 1, NULL, L"BreakoutProcess")
+                || CobraSboxDll_CheckPatternInList(lpApplicationName, (ULONG)(lpProgram - lpApplicationName),  NULL, L"BreakoutFolder")) {
                 
                 const WCHAR* lpArguments = NULL;
                 if (lpCommandLine)
@@ -1247,10 +1247,10 @@ _FX BOOL Proc_CreateProcessInternalW(
                                     if (hFile != INVALID_HANDLE_VALUE) {
 
                                         BOOLEAN is_copy;
-                                        LONG status = SbieDll_GetHandlePath(hFile, temp, &is_copy);
+                                        LONG status = CobraSboxDll_GetHandlePath(hFile, temp, &is_copy);
                                         if (status == 0 && is_copy) {
 
-                                            SbieDll_TranslateNtToDosPath(temp);
+                                            CobraSboxDll_TranslateNtToDosPath(temp);
                                             ptr = temp;
                                             len = wcslen(ptr);
                                         } 
@@ -1288,7 +1288,7 @@ _FX BOOL Proc_CreateProcessInternalW(
                         |   BELOW_NORMAL_PRIORITY_CLASS | IDLE_PRIORITY_CLASS
                         |   CREATE_UNICODE_ENVIRONMENT);
 
-                    ok = SbieDll_RunSandboxed(L"*UNBOXED*", mybuf, lpCurrentDirectory, crflags2, lpStartupInfo, lpProcessInformation);
+                    ok = CobraSboxDll_RunSandboxed(L"*UNBOXED*", mybuf, lpCurrentDirectory, crflags2, lpStartupInfo, lpProcessInformation);
 
                     err = GetLastError();
 
@@ -1792,7 +1792,7 @@ _FX BOOL Proc_ImpersonateSelf(BOOLEAN Enable)
 
     creation_flags &= ~CREATE_NEW_CONSOLE;
 
-    ok = SbieDll_RunSandboxed(L"", cmd, dir, creation_flags,
+    ok = CobraSboxDll_RunSandboxed(L"", cmd, dir, creation_flags,
                               StartupInfo, ProcessInformation);
 
     err = GetLastError();
@@ -1835,12 +1835,12 @@ _FX WCHAR *Proc_SelectCurrentDirectory(const WCHAR *lpCurrentDirectory)
 
         BOOLEAN IsBoxedPath;
         NTSTATUS status =
-                    SbieDll_GetHandlePath(FileHandle, path, &IsBoxedPath);
+                    CobraSboxDll_GetHandlePath(FileHandle, path, &IsBoxedPath);
 
         NtClose(FileHandle);
 
         if (NT_SUCCESS(status) || status == STATUS_BAD_INITIAL_PC) {
-            if (IsBoxedPath && SbieDll_TranslateNtToDosPath(path)) {
+            if (IsBoxedPath && CobraSboxDll_TranslateNtToDosPath(path)) {
 
                 return path;
             }
@@ -2028,11 +2028,11 @@ _FX void Proc_StoreImagePath(THREAD_DATA *TlsData, HANDLE FileHandle)
 {
     WCHAR *path = Dll_Alloc(sizeof(WCHAR) * 8192);
 
-    NTSTATUS status = SbieDll_GetHandlePath(
+    NTSTATUS status = CobraSboxDll_GetHandlePath(
                         FileHandle, path, &TlsData->proc_image_is_copy);
 
     if (NT_SUCCESS(status)) {
-        if (! SbieDll_TranslateNtToDosPath(path))
+        if (! CobraSboxDll_TranslateNtToDosPath(path))
             status = STATUS_UNSUCCESSFUL;
     }
 
@@ -2357,11 +2357,11 @@ _FX void Proc_ExitProcess(UINT ExitCode)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_RunFromHome
+// CobraSboxDll_RunFromHome
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_RunFromHome(
+_FX BOOLEAN CobraSboxDll_RunFromHome(
     const WCHAR *pgmName, const WCHAR *pgmArgs,
     STARTUPINFOW *si, PROCESS_INFORMATION *pi)
 {
@@ -2515,7 +2515,7 @@ _FX BOOLEAN Proc_CheckMailer(const WCHAR *ImagePath, BOOLEAN IsBoxedPath)
 
     if (! should_check_openfilepath) {
 
-        WCHAR *mail_pgm = SbieDll_AssocQueryProgram(L"mailto");
+        WCHAR *mail_pgm = CobraSboxDll_AssocQueryProgram(L"mailto");
 
         if (mail_pgm) {
 
@@ -2633,7 +2633,7 @@ _FX BOOLEAN Proc_IsSoftwareUpdateW(const WCHAR *path)
     if (Ldr_BoxedImage)
         return FALSE;
 
-    mp_flags = SbieDll_MatchPath(L'f', Ldr_ImageTruePath);
+    mp_flags = CobraSboxDll_MatchPath(L'f', Ldr_ImageTruePath);
     if (PATH_IS_OPEN(mp_flags))
         return FALSE;
 
@@ -2698,7 +2698,7 @@ _FX BOOLEAN Proc_IsSoftwareUpdateW(const WCHAR *path)
     //    Dll_Free(path2);
     //}
 
-    IsUpdate = SbieDll_CheckPatternInList(path, wcslen(path), NULL, L"SoftwareUpdater");
+    IsUpdate = CobraSboxDll_CheckPatternInList(path, wcslen(path), NULL, L"SoftwareUpdater");
 
     //
     // issue message and return
@@ -2808,7 +2808,7 @@ _FX BOOLEAN Proc_Init_AdvPack(HMODULE module)
         P_RunSetupCommandW RunSetupCommandW = (P_RunSetupCommandW)
             GetProcAddress(module, "RunSetupCommandW");
         if (RunSetupCommandW) {
-            SBIEDLL_HOOK(Proc_,RunSetupCommandW);
+            CobraSboxDll_HOOK(Proc_,RunSetupCommandW);
         }
     }
 
@@ -3094,10 +3094,10 @@ _FX void Proc_RestartProcessOutOfPcaJob(void)
         BOOLEAN is_copy;
         WCHAR *BoxedDirectory = Dll_AllocTemp(sizeof(WCHAR) * 8192);
         NTSTATUS status =
-            SbieDll_GetHandlePath(FileHandle, BoxedDirectory, &is_copy);
+            CobraSboxDll_GetHandlePath(FileHandle, BoxedDirectory, &is_copy);
 
         if (NT_SUCCESS(status) &&
-                        SbieDll_TranslateNtToDosPath(BoxedDirectory)) {
+                        CobraSboxDll_TranslateNtToDosPath(BoxedDirectory)) {
 
             wcscpy(Directory, BoxedDirectory);
         }
@@ -3110,7 +3110,7 @@ _FX void Proc_RestartProcessOutOfPcaJob(void)
     StartupInfo.dwFlags = STARTF_FORCEOFFFEEDBACK;
     memzero(&ProcessInformation, sizeof(PROCESS_INFORMATION));
 
-    ok = SbieDll_RunSandboxed(L"", CommandLine, Directory, 0,
+    ok = CobraSboxDll_RunSandboxed(L"", CommandLine, Directory, 0,
                               &StartupInfo, &ProcessInformation);
 
     if (ok) {

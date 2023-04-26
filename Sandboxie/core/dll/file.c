@@ -107,7 +107,7 @@ typedef struct _FILE_DRIVE FILE_DRIVE;
 static ULONG File_FindBoxPrefixLength(const WCHAR* CopyPath);
 
 
-SBIEDLL_EXPORT NTSTATUS File_GetName(
+CobraSboxDll_EXPORT NTSTATUS File_GetName(
     HANDLE RootDirectory, UNICODE_STRING *ObjectName,
     WCHAR **OutTruePath, WCHAR **OutCopyPath, ULONG *OutFlags);
 
@@ -1961,7 +1961,7 @@ _FX VOID File_Wow64FixProcImage(WCHAR* proc_image_path)
             wmemcpy(proc_image_path, File_Wow64SysNative, File_Wow64SysNativeLen);
             wmemcpy(proc_image_path + File_Wow64SysNativeLen, name + sys32len, length - sys32len + 1);
 
-            SbieDll_TranslateNtToDosPath(proc_image_path);
+            CobraSboxDll_TranslateNtToDosPath(proc_image_path);
         }
 
         Dll_Free(name);
@@ -2013,13 +2013,13 @@ _FX NTSTATUS File_GetName_FromFileId(
     if (1) {
 
         BOOLEAN IsBoxedPath;
-        status = SbieDll_GetHandlePath(
+        status = CobraSboxDll_GetHandlePath(
                     ObjectAttributes->RootDirectory, NULL, &IsBoxedPath);
         if (IsBoxedPath && (
                 NT_SUCCESS(status) || (status == STATUS_BAD_INITIAL_PC))) {
 
             WCHAR *path = Dll_AllocTemp(8192);
-            status = SbieDll_GetHandlePath(
+            status = CobraSboxDll_GetHandlePath(
                 ObjectAttributes->RootDirectory, path, NULL);
             if (NT_SUCCESS(status)) {
 
@@ -2260,7 +2260,7 @@ _FX ULONG File_MatchPath2(const WCHAR *path, ULONG *FileFlags, BOOLEAN bCheckObj
             wmemcpy(path2, File_Mup, File_MupLen);
             wmemcpy(path2 + File_MupLen, ptr + 1, len1 + 1);
 
-            mp_flags = SbieDll_MatchPath2(L'f', path2, bCheckObjectExists, bMonitorLog);
+            mp_flags = CobraSboxDll_MatchPath2(L'f', path2, bCheckObjectExists, bMonitorLog);
 
             Dll_Free(path2);
             goto finish;
@@ -2271,7 +2271,7 @@ _FX ULONG File_MatchPath2(const WCHAR *path, ULONG *FileFlags, BOOLEAN bCheckObj
     // match path
     //
 
-    mp_flags = SbieDll_MatchPath2((FileFlags ? L'f' : L'p'), path, FALSE, TRUE);
+    mp_flags = CobraSboxDll_MatchPath2((FileFlags ? L'f' : L'p'), path, FALSE, TRUE);
 
     if (mp_flags)
         goto finish;
@@ -2286,7 +2286,7 @@ _FX ULONG File_MatchPath2(const WCHAR *path, ULONG *FileFlags, BOOLEAN bCheckObj
 
         WCHAR *path2 = File_FixPermLinksForMatchPath(path);
         if (path2) {
-            mp_flags = SbieDll_MatchPath2(L'f', path2, bCheckObjectExists, bMonitorLog);
+            mp_flags = CobraSboxDll_MatchPath2(L'f', path2, bCheckObjectExists, bMonitorLog);
             Dll_Free(path2);
 
             if (PATH_IS_WRITE(mp_flags)) {
@@ -2620,7 +2620,7 @@ ReparseLoop:
                 // allow access unless it explicitly matches a closed path
                 //
 
-                mp_flags = SbieDll_MatchPath(L'p', TruePath);
+                mp_flags = CobraSboxDll_MatchPath(L'p', TruePath);
 
                 if (PATH_IS_CLOSED(mp_flags)) {
                     status = STATUS_ACCESS_DENIED;
@@ -2959,7 +2959,7 @@ ReparseLoop:
 
             BOOLEAN use_rule_specificity = (Dll_ProcessFlags & SBIE_FLAG_RULE_SPECIFICITY) != 0;
 
-            if (use_rule_specificity && SbieDll_HasReadableSubPath(L'f', OriginalPath ? OriginalPath : TruePath)){
+            if (use_rule_specificity && CobraSboxDll_HasReadableSubPath(L'f', OriginalPath ? OriginalPath : TruePath)){
 
                 //
                 // When using Rule specificity we need to create some dummy directories 
@@ -4380,7 +4380,7 @@ _FX NTSTATUS File_CopyShortName(
             req->path_len = CopyPath_len;
             wcscpy(req->path, CopyPath);
 
-            rpl = SbieDll_CallServer(&req->h);
+            rpl = CobraSboxDll_CallServer(&req->h);
             if (rpl)
                 Dll_Free(rpl);
 
@@ -4416,7 +4416,7 @@ _FX NTSTATUS File_CopyShortName(
             req->path_len = CopyPath_len;
             wcscpy(req->path, CopyPath);
 
-            rpl = SbieDll_CallServer(&req->h);
+            rpl = CobraSboxDll_CallServer(&req->h);
             if (rpl)
                 Dll_Free(rpl);
 
@@ -4590,7 +4590,7 @@ _FX BOOLEAN File_AdjustShortName(
             req->path_len = CopyPath_len;
             wcscpy(req->path, CopyPath);
 
-            rpl = SbieDll_CallServer(&req->h);
+            rpl = CobraSboxDll_CallServer(&req->h);
             if (rpl)
                 Dll_Free(rpl);
 
@@ -5037,7 +5037,7 @@ _FX NTSTATUS File_NtQueryFullAttributesFileImpl(
 
         BOOLEAN use_rule_specificity = (Dll_ProcessFlags & SBIE_FLAG_RULE_SPECIFICITY) != 0;
 
-        if (use_rule_specificity && SbieDll_HasReadableSubPath(L'f', OriginalPath ? OriginalPath : TruePath)){
+        if (use_rule_specificity && CobraSboxDll_HasReadableSubPath(L'f', OriginalPath ? OriginalPath : TruePath)){
 
             //
             // When using Rule specificity we need to create some dummy directories 
@@ -5227,7 +5227,7 @@ _FX NTSTATUS File_NtQueryInformationFile(
 
             BOOLEAN IsBoxedPath;
             NTSTATUS status2 =
-                SbieDll_GetHandlePath(FileHandle, NULL, &IsBoxedPath);
+                CobraSboxDll_GetHandlePath(FileHandle, NULL, &IsBoxedPath);
             if (IsBoxedPath && (NT_SUCCESS(status2)
                                     || (status2 == STATUS_BAD_INITIAL_PC))) {
 
@@ -5314,7 +5314,7 @@ _FX NTSTATUS File_NtQueryInformationFile(
             // otherwise we do normal drive letter processing
             //
 
-            SbieDll_TranslateNtToDosPath(TruePath);
+            CobraSboxDll_TranslateNtToDosPath(TruePath);
             TruePathLen = wcslen(TruePath);
             if (TruePathLen >= 2 && TruePath[1] == L':') {
                 if (TruePathLen == 2)
@@ -5374,7 +5374,7 @@ _FX ULONG File_GetFinalPathNameByHandleW(
     WCHAR *path, *result;
     BOOLEAN IsBoxedPath;
 
-    status = SbieDll_GetHandlePath(hFile, NULL, &IsBoxedPath);
+    status = CobraSboxDll_GetHandlePath(hFile, NULL, &IsBoxedPath);
     if (IsBoxedPath &&
             (NT_SUCCESS(status) || (status == STATUS_BAD_INITIAL_PC))) {
 
@@ -5383,7 +5383,7 @@ _FX ULONG File_GetFinalPathNameByHandleW(
         //
         
         path = Dll_AllocTemp(8192);
-        status = SbieDll_GetHandlePath(hFile, path, NULL);
+        status = CobraSboxDll_GetHandlePath(hFile, path, NULL);
         if (! NT_SUCCESS(status)) {
 
             rc = 0;
@@ -6095,7 +6095,7 @@ has_copy_path:
             req->path_len = CopyPath_len;
             wcscpy(req->path, CopyPath);
 
-            rpl = SbieDll_CallServer(&req->h);
+            rpl = CobraSboxDll_CallServer(&req->h);
             if (rpl) {
                 status = rpl->status;
                 Dll_Free(rpl);
@@ -6189,7 +6189,7 @@ _FX NTSTATUS File_SetDisposition(
                     ULONG len = wcslen(TruePath);
                     DosPath = Dll_AllocTemp((len + 8) * sizeof(WCHAR));
                     wmemcpy(DosPath, TruePath, len + 1);
-                    if (SbieDll_TranslateNtToDosPath(DosPath)) {
+                    if (CobraSboxDll_TranslateNtToDosPath(DosPath)) {
                         len = wcslen(DosPath);
                         wmemmove(DosPath + 4, DosPath, len + 1);
                         wmemcpy(DosPath, File_BQQB, 4);
@@ -7104,11 +7104,11 @@ _FX HANDLE File_GetTrueHandle(HANDLE FileHandle, BOOLEAN *pIsOpenPath)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetHandlePath
+// CobraSboxDll_GetHandlePath
 //---------------------------------------------------------------------------
 
 
-_FX ULONG SbieDll_GetHandlePath(
+_FX ULONG CobraSboxDll_GetHandlePath(
     HANDLE FileHandle, WCHAR *OutWchar8192, BOOLEAN *IsBoxedPath)
 {
     THREAD_DATA *TlsData = Dll_GetTlsData(NULL);
@@ -7118,7 +7118,7 @@ _FX ULONG SbieDll_GetHandlePath(
     WCHAR *TruePath;
     WCHAR *CopyPath;
 
-    SbieDll_GetDrivePath(0);            // initialize drives
+    CobraSboxDll_GetDrivePath(0);            // initialize drives
 
     Dll_PushTlsNameBuffer(TlsData);
 
@@ -7167,11 +7167,11 @@ _FX ULONG SbieDll_GetHandlePath(
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetDrivePath
+// CobraSboxDll_GetDrivePath
 //---------------------------------------------------------------------------
 
 
-_FX const WCHAR *SbieDll_GetDrivePath(ULONG DriveIndex)
+_FX const WCHAR *CobraSboxDll_GetDrivePath(ULONG DriveIndex)
 {
     if ((! File_Drives) || (DriveIndex == -1)) {
         File_InitDrives(0xFFFFFFFF);
@@ -7187,11 +7187,11 @@ _FX const WCHAR *SbieDll_GetDrivePath(ULONG DriveIndex)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_GetUserPathEx
+// CobraSboxDll_GetUserPathEx
 //---------------------------------------------------------------------------
 
 
-_FX const WCHAR *SbieDll_GetUserPathEx(WCHAR which)
+_FX const WCHAR *CobraSboxDll_GetUserPathEx(WCHAR which)
 {
     if (! Dll_SidString) {
 
@@ -7206,7 +7206,7 @@ _FX const WCHAR *SbieDll_GetUserPathEx(WCHAR which)
 
     if (! File_CurrentUser) {
 
-        SbieDll_GetDrivePath(0);            // initialize drives
+        CobraSboxDll_GetDrivePath(0);            // initialize drives
         File_InitUsers();
     }
 
@@ -7222,11 +7222,11 @@ _FX const WCHAR *SbieDll_GetUserPathEx(WCHAR which)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_TranslateNtToDosPath
+// CobraSboxDll_TranslateNtToDosPath
 //---------------------------------------------------------------------------
 
 
-_FX BOOLEAN SbieDll_TranslateNtToDosPath(WCHAR *path)
+_FX BOOLEAN CobraSboxDll_TranslateNtToDosPath(WCHAR *path)
 {
     const FILE_DRIVE *drive;
     ULONG path_len, prefix_len;
@@ -7236,7 +7236,7 @@ _FX BOOLEAN SbieDll_TranslateNtToDosPath(WCHAR *path)
         File_DrivesAndLinks_CritSec = Dll_Alloc(sizeof(CRITICAL_SECTION));
         InitializeCriticalSectionAndSpinCount(
             File_DrivesAndLinks_CritSec, 1000);
-        SbieDll_GetDrivePath(0);            // initialize drives
+        CobraSboxDll_GetDrivePath(0);            // initialize drives
     }
 
     if (_wcsnicmp(path, File_Mup, File_MupLen) == 0) {
@@ -7330,7 +7330,7 @@ _FX WCHAR *File_GetTruePathForBoxedPath(const WCHAR *Path, BOOLEAN IsDosPath)
 
             if (NT_SUCCESS(status)) {
                 if (IsDosPath) {
-                    if (! SbieDll_TranslateNtToDosPath(TruePath))
+                    if (! CobraSboxDll_TranslateNtToDosPath(TruePath))
                         TruePath = NULL;
                 }
             } else
@@ -7355,11 +7355,11 @@ _FX WCHAR *File_GetTruePathForBoxedPath(const WCHAR *Path, BOOLEAN IsDosPath)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_DeviceChange
+// CobraSboxDll_DeviceChange
 //---------------------------------------------------------------------------
 
 
-_FX void SbieDll_DeviceChange(WPARAM wParam, LPARAM lParam)
+_FX void CobraSboxDll_DeviceChange(WPARAM wParam, LPARAM lParam)
 {
     static ULONG LastTickCount = 0;
     static ULONG LastWParam    = 0;
@@ -7405,11 +7405,11 @@ _FX void SbieDll_DeviceChange(WPARAM wParam, LPARAM lParam)
 
 
 //---------------------------------------------------------------------------
-// SbieDll_QueryFileAttributes
+// CobraSboxDll_QueryFileAttributes
 //---------------------------------------------------------------------------
 
 
-BOOL SbieDll_QueryFileAttributes(const WCHAR *NtPath, ULONG64 *size, ULONG64 *date, ULONG *attrs)
+BOOL CobraSboxDll_QueryFileAttributes(const WCHAR *NtPath, ULONG64 *size, ULONG64 *date, ULONG *attrs)
 {
     NTSTATUS status;
     UNICODE_STRING uni;

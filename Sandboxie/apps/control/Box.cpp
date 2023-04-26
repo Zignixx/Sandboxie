@@ -1265,7 +1265,7 @@ BOOL CBox::GetBorder(COLORREF *color, BOOL *title, int* width)
 
     return TRUE;*/
 
-    return SbieDll_GetBorderColor(m_name, color, title, width);
+    return CobraSboxDll_GetBorderColor(m_name, color, title, width);
 }
 
 

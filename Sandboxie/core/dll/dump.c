@@ -221,7 +221,7 @@ _FX int Dump_Init(void)
     /*if (_wcsicmp(Dll_ImageName, L"WerFault.exe") == 0) // fre experimenting only
     {
         P_MiniDumpWriteDump MiniDumpWriteDump = (P_MiniDumpWriteDump)GetProcAddress(Dump_DbgHelpMod, "MiniDumpWriteDump");
-        SBIEDLL_HOOK(Dump_, MiniDumpWriteDump);
+        CobraSboxDll_HOOK(Dump_, MiniDumpWriteDump);
         return 1;
     }*/
 
@@ -243,7 +243,7 @@ _FX int Dump_Init(void)
     // See also: "SetUnhandledExceptionFilter" and VC8 (and later)
     // http://blog.kalmbachnet.de/?postid=75
 
-    SBIEDLL_HOOK(Dump_, SetUnhandledExceptionFilter);
+    CobraSboxDll_HOOK(Dump_, SetUnhandledExceptionFilter);
 
     // Register Vectored Exception Handler
     //AddVectoredExceptionHandler(0, Dump_CrashHandlerExceptionFilter);

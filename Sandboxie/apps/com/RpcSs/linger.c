@@ -26,7 +26,7 @@ typedef long NTSTATUS;
 
 #include <windows.h>
 #include <stdlib.h>
-#include "core/dll/sbiedll.h"
+#include "core/dll/CobraSboxDll.h"
 #include "common/win32_ntddk.h"
 #include "common/my_version.h"
 #include "common/defines.h"
@@ -360,7 +360,7 @@ int DoLingerLeader(void)
             if (rc != 0)
                 break;
 
-            SbieDll_StartBoxedService(image, TRUE);
+            CobraSboxDll_StartBoxedService(image, TRUE);
         }
 
         ULONG buf_len = 4096 * sizeof(WCHAR);
@@ -373,7 +373,7 @@ int DoLingerLeader(void)
             if (rc != 0)
                 break;
 
-            SbieDll_ExpandAndRunProgram(buf1);
+            CobraSboxDll_ExpandAndRunProgram(buf1);
         }
 
         HeapFree(GetProcessHeap(), 0, buf1);
@@ -436,9 +436,9 @@ int DoLingerLeader(void)
 
                 // Note: since we normally no longer start services as system this is pointless
 
-                //HANDLE ProcessHandle = SbieDll_OpenProcess(PROCESS_QUERY_INFORMATION, pids_i);
+                //HANDLE ProcessHandle = CobraSboxDll_OpenProcess(PROCESS_QUERY_INFORMATION, pids_i);
                 //if (ProcessHandle) {
-                //    if (SbieDll_CheckProcessLocalSystem(ProcessHandle))
+                //    if (CobraSboxDll_CheckProcessLocalSystem(ProcessHandle))
                 //        is_local_system_sid = TRUE;
                 //    CloseHandle(ProcessHandle);
                 //}
@@ -596,7 +596,7 @@ do_kill_all:
         HeapFree(GetProcessHeap(), 0, pids);
 
         if (terminate_and_stop) {
-            SbieDll_KillAll(-1, NULL);
+            CobraSboxDll_KillAll(-1, NULL);
             break;
         }
     }
